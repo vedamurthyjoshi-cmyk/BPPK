@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Therapeutic Drug Monitoring — Vancomycin, Phenytoin, Digoxin – Biopharmaceutics & Pharmacokinetics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Therapeutic Drug Monitoring — Vancomycin, Phenytoin, Digoxin</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Therapeutic Drug Monitoring (TDM)</h2><p>TDM is the measurement of drug concentrations in blood to individualise dosing for narrow therapeutic index drugs. Goal: maintain Css within the therapeutic window — above MEC (efficacy) and below MTC (toxicity).</p><h3>Vancomycin</h3><p>Target trough: 10–20 mg/L (serious infections). Trough &lt;10 → treatment failure risk. Trough &gt;20 → nephrotoxicity. Sample trough 30 min before 4th dose (steady state). AUC/MIC-guided dosing now preferred (target AUC/MIC 400–600).</p><h3>Phenytoin</h3><p>Target range: 10–20 mg/L (total). Nonlinear (MM) kinetics — small dose increases near saturation cause disproportionate Cp increases. Hypoalbuminaemia: measure free phenytoin (target 1–2 mg/L).</p><h3>Digoxin</h3><p>Target: 0.8–2.0 ng/mL (heart failure). Narrow window — toxicity (arrhythmias, nausea) above 2.5 ng/mL. Sample 6–12h post-dose when distribution is complete. Renal function critical — digoxin is renally cleared.</p><h3>Other TDM Drugs</h3><p>Aminoglycosides (gentamicin, tobramycin), cyclosporine, tacrolimus, lithium, theophylline, carbamazepine, valproate. All require individual dose adjustment based on measured concentrations.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Therapeutic Drug Monitoring</h2><div class="question"><p>1. TDM is most clinically necessary for drugs with:</p><div class="opts"><label onclick="cho(this,false)">A. Wide therapeutic index and predictable kinetics</label><label onclick="cho(this,true)" data-c>B. Narrow therapeutic index and variable pharmacokinetics</label><label onclick="cho(this,false)">C. Long half-life and high protein binding only</label><label onclick="cho(this,false)">D. Extensive first-pass metabolism</label></div></div><div class="question"><p>2. In TDM, a vancomycin trough of 8 mg/L (target 10–20 mg/L) indicates:</p><div class="opts"><label onclick="cho(this,false)">A. Dose reduction needed</label><label onclick="cho(this,true)" data-c>B. Dose increase needed — below therapeutic range</label><label onclick="cho(this,false)">C. No change required</label><label onclick="cho(this,false)">D. Switch to oral route</label></div></div><div class="question"><p>3. Digoxin TDM samples are collected 6–12 hours post-dose because:</p><div class="opts"><label onclick="cho(this,true)" data-c>A. Distribution from plasma to cardiac tissue is complete by then</label><label onclick="cho(this,false)">B. Absorption is complete by 6 hours</label><label onclick="cho(this,false)">C. Elimination is complete by 6 hours</label><label onclick="cho(this,false)">D. Peak concentrations occur at 6–12 hours</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Show 3 drug examples with TDM: therapeutic window, target trough/peak
+// Side-by-side bars with windows highlighted
+
+const drugs=[
+  {
+    name:'Vancomycin',
+    route:'IV q8h',
+    trough_lo:10, trough_hi:20,
+    peak_lo:25, peak_hi:40,
+    measured_trough:8, measured_peak:22,
+    unit:'mg/L',
+    col:'#3498DB',
+    note:'Trough<10 → infection risk\nTrough>20 → nephrotoxicity',
+  },
+  {
+    name:'Phenytoin',
+    route:'Oral q12h',
+    trough_lo:10, trough_hi:20,
+    peak_lo:15, peak_hi:25,
+    measured_trough:18, measured_peak:24,
+    unit:'mg/L',
+    col:'#E74C3C',
+    note:'Nonlinear PK!\nSmall dose change = large Cp change',
+  },
+  {
+    name:'Digoxin',
+    route:'Oral daily',
+    trough_lo:0.8, trough_hi:2.0,
+    peak_lo:1.2, peak_hi:2.5,
+    measured_trough:2.4, measured_peak:3.1,
+    unit:'ng/mL',
+    col:'#F39C12',
+    note:'Narrow window!\nSample 6h post-dose (dist. complete)',
+  },
+];
+
+function drawDrugBar(drug, bx, by, bw, bh){
+  const scale=bh/(drug.peak_hi*1.4);
+  function ty(v){return by+bh-v*scale;}
+
+  // Background
+  ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(bx,by,bw,bh);
+  ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.strokeRect(bx,by,bw,bh);
+
+  // Therapeutic window (trough range)
+  ctx.fillStyle='rgba(46,204,113,0.15)';
+  ctx.fillRect(bx,ty(drug.trough_hi),bw/2-2,ty(drug.trough_lo)-ty(drug.trough_hi));
+  ctx.strokeStyle='rgba(46,204,113,0.4)';ctx.lineWidth=1;ctx.setLineDash([2,3]);
+  ctx.beginPath();ctx.moveTo(bx,ty(drug.trough_hi));ctx.lineTo(bx+bw/2-2,ty(drug.trough_hi));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(bx,ty(drug.trough_lo));ctx.lineTo(bx+bw/2-2,ty(drug.trough_lo));ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Therapeutic window (peak range)
+  ctx.fillStyle='rgba(52,152,219,0.12)';
+  ctx.fillRect(bx+bw/2+2,ty(drug.peak_hi),bw/2-2,ty(drug.peak_lo)-ty(drug.peak_hi));
+  ctx.strokeStyle='rgba(52,152,219,0.4)';ctx.lineWidth=1;ctx.setLineDash([2,3]);
+  ctx.beginPath();ctx.moveTo(bx+bw/2+2,ty(drug.peak_hi));ctx.lineTo(bx+bw,ty(drug.peak_hi));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(bx+bw/2+2,ty(drug.peak_lo));ctx.lineTo(bx+bw,ty(drug.peak_lo));ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Measured trough bar
+  const troughOK=drug.measured_trough>=drug.trough_lo && drug.measured_trough<=drug.trough_hi;
+  ctx.fillStyle=(troughOK?'#27AE60':'#E74C3C')+'cc';
+  ctx.fillRect(bx+8,ty(drug.measured_trough),bw/2-18,bh-(bh-ty(drug.measured_trough)+by));
+  ctx.fillRect(bx+8,ty(drug.measured_trough),bw/2-18,ty(0)-ty(drug.measured_trough));
+
+  // Measured peak bar
+  const peakOK=drug.measured_peak>=drug.peak_lo && drug.measured_peak<=drug.peak_hi;
+  ctx.fillStyle=(peakOK?'#3498DB':'#E74C3C')+'cc';
+  ctx.fillRect(bx+bw/2+10,ty(drug.measured_peak),bw/2-18,ty(0)-ty(drug.measured_peak));
+
+  // Labels
+  ctx.fillStyle=drug.col;ctx.font='bold 12px Arial';ctx.textAlign='center';
+  ctx.fillText(drug.name,bx+bw/2,by-18);
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
+  ctx.fillText(drug.route,bx+bw/2,by-6);
+
+  ctx.fillStyle=troughOK?'#27AE60':'#E74C3C';ctx.font='bold 9px Arial';ctx.textAlign='center';
+  ctx.fillText('Trough: '+drug.measured_trough+' '+drug.unit,bx+bw/4,by+bh+12);
+  ctx.fillText(troughOK?'✓ IN RANGE':'✗ OUT',bx+bw/4,by+bh+24);
+
+  ctx.fillStyle=peakOK?'#3498DB':'#E74C3C';
+  ctx.fillText('Peak: '+drug.measured_peak+' '+drug.unit,bx+3*bw/4,by+bh+12);
+  ctx.fillText(peakOK?'✓ IN RANGE':'✗ OUT',bx+3*bw/4,by+bh+24);
+
+  // Sub-labels
+  ctx.fillStyle='#2ECC71';ctx.font='8px Arial';ctx.textAlign='center';
+  ctx.fillText('Target: '+drug.trough_lo+'–'+drug.trough_hi,bx+bw/4,by+bh+36);
+  ctx.fillStyle='#3498DB';
+  ctx.fillText('Target: '+drug.peak_lo+'–'+drug.peak_hi,bx+3*bw/4,by+bh+36);
+
+  // Note
+  ctx.fillStyle='#F1C40F';ctx.font='8px Arial';ctx.textAlign='center';
+  drug.note.split('\n').forEach((l,i)=>ctx.fillText(l,bx+bw/2,by+bh+50+i*11));
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,700,38);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('Therapeutic Drug Monitoring (TDM) — Narrow Therapeutic Index Drugs',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Sample at steady state. Trough = before next dose. Peak = after infusion/at absorption plateau.',18,44);
+
+  const panelW=210,panelH=180,panelY=65;
+  drugs.forEach((d,i)=>drawDrugBar(d,25+i*240,panelY,panelW,panelH));
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

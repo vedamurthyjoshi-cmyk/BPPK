@@ -1,0 +1,158 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Bioavailability — AUC Comparison IV vs Oral – Biopharmaceutics & Pharmacokinetics</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}
+.tabs{display:flex;gap:4px;margin-bottom:6px}
+.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}
+.tab.active{background:#4A90D9;color:#fff}
+.panel{display:none;width:720px}.panel.active{display:block}
+canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}
+.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}
+button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}
+button:hover{background:#1F618D}
+.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}
+.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}
+.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}
+.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}
+.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}
+.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}
+.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}
+.opts label:hover{background:#1F618D}
+.opts label.correct{background:#1e7e34;color:#fff}
+.opts label.wrong{background:#721c24;color:#fff}
+footer{font-size:0.75rem;color:#555;margin:8px 0 4px}
+</style></head><body>
+<h1>Bioavailability — AUC Comparison IV vs Oral</h1>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('anim')">Animation</div>
+  <div class="tab" onclick="showTab('theory')">Theory</div>
+  <div class="tab" onclick="showTab('mcq')">MCQs</div>
+</div>
+<div class="panel active" id="anim">
+<canvas id="cv" width="720" height="380"></canvas>
+<div class="controls">
+  <button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button>
+  <button onclick="t=0">Reset</button>
+</div>
+</div>
+<div class="panel" id="theory"><div class="theory"><h2>Bioavailability</h2>
+<p>Bioavailability (F) is the fraction of administered drug that reaches the systemic circulation in unchanged form. IV administration has F = 100% by definition. Oral bioavailability is reduced by incomplete absorption and first-pass metabolism.</p>
+<h3>Measurement</h3>
+<p>Absolute F = (AUCoral / AUCIV) × (Div / Doral). Relative F compares two oral formulations. AUC is measured by the trapezoidal rule from plasma concentration-time data.</p>
+<h3>Key Parameters</h3>
+<p>Cmax — peak plasma concentration (related to intensity of effect). Tmax — time to reach Cmax (related to rate of absorption). AUC — total drug exposure (related to extent of absorption).</p>
+<h3>Factors Affecting Bioavailability</h3>
+<p>Dissolution rate, GI motility, food effects, first-pass metabolism, drug-drug interactions, formulation (immediate vs sustained release).</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Bioavailability</h2>
+<div class="question"><p>1. Absolute bioavailability is calculated as:</p>
+<div class="opts">
+  <label onclick="cho(this,true)" data-c>A. (AUCoral/AUCIV) × (Div/Doral) × 100%</label>
+  <label onclick="cho(this,false)">B. (Cmax oral/Cmax IV) × 100%</label>
+  <label onclick="cho(this,false)">C. (Tmax oral/Tmax IV) × 100%</label>
+  <label onclick="cho(this,false)">D. Dose absorbed / Dose administered × 100%</label>
+</div></div>
+<div class="question"><p>2. Which parameter best reflects the RATE of drug absorption?</p>
+<div class="opts">
+  <label onclick="cho(this,false)">A. AUC</label>
+  <label onclick="cho(this,false)">B. Cmax alone</label>
+  <label onclick="cho(this,true)" data-c>C. Tmax and Cmax together</label>
+  <label onclick="cho(this,false)">D. Elimination half-life</label>
+</div></div>
+<div class="question"><p>3. A drug has AUCoral = 400 mg.h/L with 500 mg oral dose, and AUCIV = 800 mg.h/L with 200 mg IV dose. Its absolute bioavailability is:</p>
+<div class="opts">
+  <label onclick="cho(this,false)">A. 50%</label>
+  <label onclick="cho(this,false)">B. 40%</label>
+  <label onclick="cho(this,true)" data-c>C. 25%</label>
+  <label onclick="cho(this,false)">D. 80%</label>
+</div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Plot two Cp-time curves: IV (blue) and Oral (green)
+// Show Cmax, Tmax, AUC shading
+
+function Cp_iv(t){ return 10*Math.exp(-0.1*t); }
+function Cp_oral(t){ const Ka=0.5,Ke=0.1,F=0.6,D=100,Vd=10; return (F*D*Ka)/(Vd*(Ka-Ke))*(Math.exp(-Ke*t)-Math.exp(-Ka*t)); }
+
+const TMAX=40, CPMAX=12;
+function toX(time){ return 60+time*(620/TMAX); }
+function toY(cp){ return 340-cp*(280/CPMAX); }
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  // Axes
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(60,340);ctx.lineTo(690,340);ctx.stroke(); // X
+  ctx.beginPath();ctx.moveTo(60,340);ctx.lineTo(60,40);ctx.stroke();  // Y
+
+  // Axis labels
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (hours)',375,370);
+  ctx.save();ctx.translate(18,200);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Plasma Concentration (mg/L)',0,0);ctx.restore();
+  for(let i=0;i<=TMAX;i+=10){ctx.fillStyle='#555';ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText(i,toX(i),352);}
+  for(let c=0;c<=CPMAX;c+=2){ctx.fillText(c,48,toY(c)+3);}
+
+  // AUC shading for oral
+  ctx.beginPath();ctx.moveTo(toX(0),toY(0));
+  for(let ti=0;ti<=TMAX;ti+=0.5) ctx.lineTo(toX(ti),toY(Math.max(0,Cp_oral(ti))));
+  ctx.lineTo(toX(TMAX),toY(0));ctx.closePath();
+  ctx.fillStyle='rgba(46,204,113,0.15)';ctx.fill();
+
+  // AUC shading for IV
+  ctx.beginPath();ctx.moveTo(toX(0),toY(Cp_iv(0)));
+  for(let ti=0;ti<=TMAX;ti+=0.5) ctx.lineTo(toX(ti),toY(Math.max(0,Cp_iv(ti))));
+  ctx.lineTo(toX(TMAX),toY(0));ctx.lineTo(toX(0),toY(0));ctx.closePath();
+  ctx.fillStyle='rgba(52,152,219,0.15)';ctx.fill();
+
+  // IV curve
+  ctx.beginPath();ctx.strokeStyle='#3498DB';ctx.lineWidth=2.5;ctx.setLineDash([]);
+  ctx.moveTo(toX(0),toY(Cp_iv(0)));
+  for(let ti=0.1;ti<=TMAX;ti+=0.1) ctx.lineTo(toX(ti),toY(Math.max(0,Cp_iv(ti))));
+  ctx.stroke();
+
+  // Oral curve
+  ctx.beginPath();ctx.strokeStyle='#2ECC71';ctx.lineWidth=2.5;
+  ctx.moveTo(toX(0),toY(0));
+  for(let ti=0.1;ti<=TMAX;ti+=0.1) ctx.lineTo(toX(ti),toY(Math.max(0,Cp_oral(ti))));
+  ctx.stroke();
+
+  // Animated time marker
+  const tNow=(t*0.3)%TMAX;
+  const cpIV=Cp_iv(tNow), cpOral=Math.max(0,Cp_oral(tNow));
+  ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(toX(tNow),340);ctx.lineTo(toX(tNow),40);ctx.stroke();ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(toX(tNow),toY(cpIV),5,0,Math.PI*2);ctx.fillStyle='#3498DB';ctx.fill();
+  ctx.beginPath();ctx.arc(toX(tNow),toY(cpOral),5,0,Math.PI*2);ctx.fillStyle='#2ECC71';ctx.fill();
+
+  // Cmax / Tmax for oral
+  const tmax_oral=Math.log(0.5/0.1)/(0.5-0.1);
+  const cmax_oral=Cp_oral(tmax_oral);
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#2ECC71';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(toX(tmax_oral),toY(cmax_oral));ctx.lineTo(toX(tmax_oral),toY(0));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(toX(0),toY(cmax_oral));ctx.lineTo(toX(tmax_oral),toY(cmax_oral));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#2ECC71';ctx.font='9px Arial';ctx.textAlign='left';
+  ctx.fillText('Cmax',toX(0)+4,toY(cmax_oral)-3);
+  ctx.fillText('Tmax',toX(tmax_oral)+3,toY(0)+12);
+
+  // Legend + info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(450,50,250,80);
+  ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.textAlign='left';ctx.fillText('Bioavailability',460,68);
+  ctx.fillStyle='#3498DB';ctx.fillText('── IV (F = 100%, reference)',460,86);
+  ctx.fillStyle='#2ECC71';ctx.fillText('── Oral (F = 60%)',460,102);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('F = AUCoral / AUCIV × 100',460,120);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

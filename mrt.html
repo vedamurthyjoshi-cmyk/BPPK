@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Mean Residence Time — MRT and Vdss – Biopharmaceutics & Pharmacokinetics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Mean Residence Time — MRT and Vdss</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Mean Residence Time (MRT) and Vdss</h2><p>MRT is the average time a drug molecule spends in the body after a single dose. It is derived from statistical moment theory (SMT) — a model-independent approach.</p><h3>Calculation</h3><p>MRT = AUMC/AUC, where AUMC = Area Under the first Moment Curve = ∫₀^∞ t·Cp·dt. For IV bolus: MRT = 1/Ke = t½/0.693. For oral: MRT(oral) = MRT(IV) + MAT, where MAT = Mean Absorption Time = 1/Ka.</p><h3>Vdss — Volume of Distribution at Steady State</h3><p>Vdss = CL × MRT = Dose/AUC × MRT. Vdss is the most meaningful Vd parameter for two-compartment drugs because it is independent of the measurement time and the elimination process.</p><h3>Clinical Significance</h3><p>MRT is useful for comparing drug retention times across different routes and formulations. A longer MRT may indicate extensive tissue binding or slow absorption. MRT is used to design dosing intervals for modified-release formulations.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — MRT and Vdss</h2><div class="question"><p>1. Mean Residence Time (MRT) is calculated as:</p><div class="opts"><label onclick="cho(this,false)">A. AUC × CL</label><label onclick="cho(this,true)" data-c>B. AUMC / AUC</label><label onclick="cho(this,false)">C. 0.693/Ke</label><label onclick="cho(this,false)">D. Dose/Vd</label></div></div><div class="question"><p>2. For IV bolus administration, MRT equals:</p><div class="opts"><label onclick="cho(this,true)" data-c>A. 1/Ke (reciprocal of elimination rate constant)</label><label onclick="cho(this,false)">B. t½</label><label onclick="cho(this,false)">C. AUC/Dose</label><label onclick="cho(this,false)">D. Vd/CL squared</label></div></div><div class="question"><p>3. Vdss is calculated as:</p><div class="opts"><label onclick="cho(this,false)">A. Dose/Cp₀</label><label onclick="cho(this,false)">B. CL/Ke</label><label onclick="cho(this,true)" data-c>C. CL × MRT</label><label onclick="cho(this,false)">D. AUC/AUMC</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Show MRT concept: area of AUMC / AUC = average time drug spends in body
+// Visualise first moment curve alongside regular AUC curve
+
+const data=[[0,0],[0.5,8],[1,13],[2,16],[3,14],[4,12],[6,8],[8,5],[12,2],[18,0.8],[24,0.2]];
+const TMAX=24;
+
+// Compute AUC and AUMC
+let auc=0, aumc=0;
+for(let i=0;i<data.length-1;i++){
+  const [t1,c1]=data[i],[t2,c2]=data[i+1];
+  auc+=((c1+c2)/2)*(t2-t1);
+  aumc+=((t1*c1+t2*c2)/2)*(t2-t1);
+}
+auc+=data[data.length-1][1]/0.1;
+aumc+=data[data.length-1][1]/0.1*24;
+const mrt=Math.round(aumc/auc*10)/10;
+
+// Left: Cp-time curve   Right: t×Cp curve (first moment)
+const LX=50,LY=30,LW=290,LH=270;
+const RX=390,RY=30,RW=290,RH=270;
+
+const cpMax=18,tcpMax=TMAX*cpMax*0.5;
+
+function lX(tm){return LX+tm*(LW/TMAX);}
+function lY(cp){return LY+LH-cp*(LH/cpMax);}
+function rX(tm){return RX+tm*(RW/TMAX);}
+function rY(tcp){return RY+RH-tcp*(RH/tcpMax);}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  // Titles
+  ctx.fillStyle='#4A90D9';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('Cp-Time Curve (AUC)',LX+LW/2,LY-8);
+  ctx.fillText('t×Cp Curve (AUMC)',RX+RW/2,RY-8);
+
+  // Panel function
+  function panel(ox,oy,ow,oh,toXf,toYf,dataCb,col,label){
+    ctx.strokeStyle='#4A90D9';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(ox,oy+oh);ctx.lineTo(ox+ow,oy+oh);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ox,oy+oh);ctx.lineTo(ox,oy);ctx.stroke();
+    ctx.fillStyle='#AED6F1';ctx.font='9px Arial';ctx.textAlign='center';
+    ctx.fillText('Time (h)',ox+ow/2,oy+oh+18);
+    ctx.save();ctx.translate(ox-18,oy+oh/2);ctx.rotate(-Math.PI/2);ctx.fillText(label,0,0);ctx.restore();
+    // Shade AUC
+    ctx.beginPath();ctx.moveTo(toXf(data[0][0]),oy+oh);
+    data.forEach(([tm,cp])=>ctx.lineTo(toXf(tm),toYf(dataCb(tm,cp))));
+    ctx.lineTo(toXf(data[data.length-1][0]),oy+oh);ctx.closePath();
+    ctx.fillStyle='rgba(52,152,219,0.15)';ctx.fill();
+    // Curve
+    ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=2.5;
+    data.forEach(([tm,cp],i)=>{
+      const y=toYf(Math.max(0,dataCb(tm,cp)));
+      if(i===0) ctx.moveTo(toXf(tm),y); else ctx.lineTo(toXf(tm),y);
+    });
+    ctx.stroke();
+    // Points
+    data.forEach(([tm,cp])=>{
+      ctx.beginPath();ctx.arc(toXf(tm),toYf(Math.max(0,dataCb(tm,cp))),3.5,0,Math.PI*2);
+      ctx.fillStyle=col;ctx.fill();
+    });
+    [0,6,12,18,24].forEach(tm=>{ctx.fillStyle='#555';ctx.font='8px Arial';ctx.textAlign='center';ctx.fillText(tm,toXf(tm),oy+oh+10);});
+  }
+
+  panel(LX,LY,LW,LH,lX,lY,(tm,cp)=>cp,'#3498DB','Cp (mg/L)');
+  panel(RX,RY,RW,RH,rX,rY,(tm,cp)=>tm*cp,'#E74C3C','t×Cp');
+
+  // MRT marker on left panel
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#F39C12';ctx.lineWidth=2;
+  const mrt_x=lX(mrt);
+  ctx.beginPath();ctx.moveTo(mrt_x,LY);ctx.lineTo(mrt_x,LY+LH);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#F39C12';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('MRT = '+mrt+' h',mrt_x,LY+LH+26);
+  ctx.fillStyle='rgba(241,196,15,0.2)';ctx.fillRect(mrt_x-2,LY,4,LH);
+
+  // Animated dot
+  const tNow=(t*0.2)%TMAX;
+  // Interpolate Cp at tNow
+  let cpNow=0;
+  for(let i=0;i<data.length-1;i++){
+    const [t1,c1]=data[i],[t2,c2]=data[i+1];
+    if(tNow>=t1&&tNow<=t2){cpNow=c1+(c2-c1)*(tNow-t1)/(t2-t1);break;}
+  }
+  ctx.beginPath();ctx.arc(lX(tNow),lY(cpNow),5,0,Math.PI*2);ctx.fillStyle='#F1C40F';ctx.fill();
+  ctx.beginPath();ctx.arc(rX(tNow),rY(tNow*cpNow),5,0,Math.PI*2);ctx.fillStyle='#F1C40F';ctx.fill();
+
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,325,700,50);
+  ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.textAlign='left';
+  ctx.fillText('MRT = AUMC / AUC = '+Math.round(aumc)+' / '+Math.round(auc)+' = '+mrt+' hours',18,343);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Vdss = CL × MRT    CL = Dose/AUC    MRT(oral) = MRT(IV) + MAT (mean absorption time)',18,360);
+  ctx.fillText('For IV bolus: MRT = t½/0.693 = 1/Ke    MRT = average time one drug molecule spends in body',18,374);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

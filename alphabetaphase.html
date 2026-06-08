@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Alpha and Beta Phases — Two-Compartment Distribution – Biopharmaceutics & Pharmacokinetics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Alpha and Beta Phases — Two-Compartment Distribution</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Alpha and Beta Phases in Two-Compartment Model</h2><p>In a two-compartment model, the semi-log Cp-time plot shows two distinct phases after IV bolus — a rapid α-phase and a slower β-phase.</p><h3>Alpha (α) Phase — Distribution Phase</h3><p>Initial rapid decline of plasma concentration. Drug rapidly distributes from central compartment (plasma, well-perfused organs) to peripheral compartment (muscle, fat, slowly perfused tissues). Rate constant α is large (fast process).</p><h3>Beta (β) Phase — Elimination Phase</h3><p>Slower terminal decline. Drug has equilibrated between compartments. Elimination from central compartment dominates. The slope of the terminal log-linear phase = -β/2.303. β &lt; α always.</p><h3>Feathering Method</h3><p>To resolve α and β: extrapolate terminal β line to Y-axis → get B and β. Subtract extrapolated values from observed Cp → residuals = A·e^(-αt). Plot residuals → straight line → get A and α.</p><h3>Clinical Drugs with Two-Compartment Behaviour</h3><p>Digoxin, aminoglycosides (gentamicin, tobramycin), lidocaine, cyclosporine, thiopental, heparin. Important for aminoglycoside TDM: sample at α-phase equilibration for trough, not immediately post-dose.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Alpha and Beta Phases</h2><div class="question"><p>1. The alpha (α) phase in a two-compartment model primarily represents:</p><div class="opts"><label onclick="cho(this,false)">A. Elimination of drug from body</label><label onclick="cho(this,true)" data-c>B. Distribution of drug from central to peripheral compartment</label><label onclick="cho(this,false)">C. Absorption of drug</label><label onclick="cho(this,false)">D. Renal excretion</label></div></div><div class="question"><p>2. In a two-compartment model, the terminal slope of a semi-log plot equals:</p><div class="opts"><label onclick="cho(this,false)">A. -α/2.303</label><label onclick="cho(this,true)" data-c>B. -β/2.303</label><label onclick="cho(this,false)">C. -(α+β)/2.303</label><label onclick="cho(this,false)">D. -Ke/2.303</label></div></div><div class="question"><p>3. The feathering (method of residuals) technique is used to:</p><div class="opts"><label onclick="cho(this,true)" data-c>A. Separate and quantify both α and β exponential components</label><label onclick="cho(this,false)">B. Calculate AUC by the trapezoidal rule</label><label onclick="cho(this,false)">C. Determine Cmax and Tmax</label><label onclick="cho(this,false)">D. Fit Michaelis-Menten parameters</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Show animated drug moving from central to peripheral compartment
+// With matching biexponential curve
+
+const A=18,alpha=0.6,B=6,beta=0.07,TMAX=50;
+function Cp(ti){return A*Math.exp(-alpha*ti)+B*Math.exp(-beta*ti);}
+
+// Central compartment (left) and Peripheral (right)
+// Particles: fast redistribution α, slow elimination β
+
+let particles=[];
+for(let i=0;i<40;i++){
+  particles.push({
+    x:120+Math.random()*120,y:100+Math.random()*100,
+    comp:'central',vx:(Math.random()-0.5)*1.2,vy:(Math.random()-0.5)*1.2,
+    transferTimer:Math.floor(Math.random()*200)
+  });
+}
+
+// PK plot
+const BX=400,BY=30,BW=300,BH=220;
+function toX(tm){return BX+tm*(BW/TMAX);}
+function toY(logcp){return BY+BH-(logcp-(-0.5))*(BH/(Math.log10(A+B)+0.5));}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  // Central compartment
+  ctx.fillStyle='rgba(26,82,118,0.35)';ctx.fillRect(30,80,200,160);
+  ctx.strokeStyle='#3498DB';ctx.lineWidth=2;ctx.strokeRect(30,80,200,160);
+  ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('Central Compartment (V1)',130,74);
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
+  ctx.fillText('Plasma + highly perfused organs',130,96);
+  ctx.fillText('Drug enters here (IV bolus)',130,110);
+
+  // Peripheral compartment
+  ctx.fillStyle='rgba(39,174,96,0.25)';ctx.fillRect(255,80,130,160);
+  ctx.strokeStyle='#27AE60';ctx.lineWidth=2;ctx.strokeRect(255,80,130,160);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('Peripheral (V2)',320,74);
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
+  ctx.fillText('Tissues, fat',320,96);
+
+  // Elimination arrow (from central, downward)
+  ctx.strokeStyle='#E74C3C';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(130,240);ctx.lineTo(130,280);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#E74C3C';ctx.beginPath();ctx.moveTo(130,280);ctx.lineTo(122,268);ctx.lineTo(138,268);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#E74C3C';ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText('Elimination (k10)',130,296);
+
+  // Transfer arrows (bidirectional)
+  const arrH=(x1,y1,x2,y2,col,label)=>{
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    const a=Math.atan2(y2-y1,x2-x1);
+    ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-8*Math.cos(a-0.4),y2-8*Math.sin(a-0.4));
+    ctx.lineTo(x2-8*Math.cos(a+0.4),y2-8*Math.sin(a+0.4));ctx.closePath();ctx.fill();
+    ctx.fillStyle=col;ctx.font='9px Arial';ctx.textAlign='center';
+    ctx.fillText(label,(x1+x2)/2,(y1+y2)/2-5);
+  };
+  arrH(230,145,255,135,'#F39C12','k12 →');
+  arrH(255,165,230,175,'#9B59B6','← k21');
+
+  // Phase labels
+  ctx.fillStyle='#3498DB';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('α-phase: rapid distribution into V2',200,315);
+  ctx.fillStyle='#E74C3C';ctx.font='bold 11px Arial';
+  ctx.fillText('β-phase: slow elimination from V1',200,332);
+
+  // Particles
+  particles.forEach(p=>{
+    const col=p.comp==='central'?'#3498DB':'#27AE60';
+    ctx.beginPath();ctx.arc(p.x,p.y,4.5,0,Math.PI*2);
+    ctx.fillStyle=col;ctx.globalAlpha=0.8;ctx.fill();ctx.globalAlpha=1;
+    p.x+=p.vx;p.y+=p.vy;
+
+    // Bounds by compartment
+    const bounds=p.comp==='central'?{l:32,r:228,t:82,b:238}:{l:257,r:383,t:82,b:238};
+    if(p.x<bounds.l){p.x=bounds.l;p.vx*=-1;}
+    if(p.x>bounds.r){p.x=bounds.r;p.vx*=-1;}
+    if(p.y<bounds.t){p.y=bounds.t;p.vy*=-1;}
+    if(p.y>bounds.b){p.y=bounds.b;p.vy*=-1;}
+
+    // Transfer logic
+    p.transferTimer--;
+    if(p.transferTimer<=0){
+      if(p.comp==='central' && Math.random()<0.4){
+        p.comp='peripheral';p.x=260+Math.random()*120;p.y=90+Math.random()*140;
+      } else if(p.comp==='peripheral' && Math.random()<0.2){
+        p.comp='central';p.x=35+Math.random()*190;p.y=85+Math.random()*150;
+      }
+      p.transferTimer=80+Math.floor(Math.random()*120);
+    }
+  });
+  // Slowly eliminate central particles
+  if(t%120===0 && particles.length>5) particles.shift();
+
+  // PK Plot (semi-log)
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(BX,BY+BH);ctx.lineTo(BX+BW,BY+BH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(BX,BY+BH);ctx.lineTo(BX,BY);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (h)',BX+BW/2,BY+BH+20);
+  ctx.save();ctx.translate(BX-18,BY+BH/2);ctx.rotate(-Math.PI/2);ctx.fillText('log Cp',0,0);ctx.restore();
+
+  // Biexponential curve
+  ctx.beginPath();ctx.strokeStyle='#F1C40F';ctx.lineWidth=2.5;
+  for(let ti=0.05;ti<=TMAX;ti+=0.2){
+    const cp=Cp(ti);
+    const y=toY(Math.log10(cp));
+    if(ti<0.15) ctx.moveTo(toX(ti),y); else ctx.lineTo(toX(ti),y);
+  }
+  ctx.stroke();
+
+  // Beta line extrapolated
+  ctx.beginPath();ctx.strokeStyle='rgba(231,76,60,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  for(let ti=0;ti<=TMAX;ti+=0.5) ctx.lineTo(toX(ti),toY(Math.log10(B*Math.exp(-beta*ti))));
+  ctx.stroke();ctx.setLineDash([]);
+
+  // Phase annotations
+  ctx.fillStyle='#3498DB';ctx.font='bold 10px Arial';ctx.textAlign='left';
+  ctx.fillText('α-phase',toX(0.5),toY(Math.log10(Cp(2)))-14);
+  ctx.fillStyle='#E74C3C';ctx.fillText('β-phase',toX(15),toY(Math.log10(Cp(15)))+14);
+
+  // Animated dot on curve
+  const tNow=(t*0.18)%TMAX;
+  ctx.beginPath();ctx.arc(toX(tNow),toY(Math.log10(Cp(tNow))),5,0,Math.PI*2);
+  ctx.fillStyle='#F1C40F';ctx.fill();
+
+  // Info
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,338,700,38);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='left';
+  ctx.fillText('Two-compartment: Cp = A·e^(-αt) + B·e^(-βt)   α='+alpha+' h⁻¹  β='+beta+' h⁻¹',18,354);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('α-phase (fast): distribution to peripheral compartment   β-phase (slow): elimination   Always α > β',18,370);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

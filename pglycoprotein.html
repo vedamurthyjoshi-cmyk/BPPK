@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>P-glycoprotein Efflux and Drug Interactions – Biopharmaceutics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>P-glycoprotein Efflux and Drug Interactions</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>P-glycoprotein (P-gp) and Drug Efflux</h2><p>P-glycoprotein (P-gp, MDR1) is an ATP-dependent efflux transporter located on the apical surface of intestinal enterocytes. It actively pumps drugs that have entered the enterocyte back into the gut lumen, significantly reducing their bioavailability.</p><h3>Mechanism</h3><p>P-gp binds lipophilic substrates within the cell membrane and uses ATP hydrolysis to expel them against their concentration gradient, back into the intestinal lumen. This creates a futile cycle where the drug is absorbed and immediately pumped back out.</p><h3>Clinical Significance</h3><p>Many important drugs are P-gp substrates: digoxin, cyclosporine, paclitaxel, HIV protease inhibitors, and many anticancer agents. Their low oral bioavailability is partly due to P-gp efflux.</p><h3>Drug Interactions</h3><p>P-gp inhibitors (grapefruit juice, verapamil, ketoconazole, ritonavir) block efflux, dramatically increasing bioavailability of substrates. Example: quinidine inhibits P-gp → digoxin levels double. Rifampicin induces P-gp → reduced cyclosporine levels → risk of transplant rejection.</p><h3>Pharmacogenomics</h3><p>MDR1 gene polymorphisms affect P-gp expression — explaining inter-individual variation in drug response and bioavailability.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — P-glycoprotein Efflux and Drug Interactions</h2><div class="question"><p>1. P-glycoprotein is classified as:</p><div class="opts"><label onclick="cho(this,false)">A. An influx transporter</label><label onclick="cho(this,true)" data-c>B. An ATP-dependent efflux pump</label><label onclick="cho(this,false)">C. A passive diffusion channel</label><label onclick="cho(this,false)">D. A metabolic enzyme</label></div></div><div class="question"><p>2. P-gp inhibition by grapefruit juice would most likely:</p><div class="opts"><label onclick="cho(this,false)">A. Decrease absorption of P-gp substrates</label><label onclick="cho(this,false)">B. Increase metabolism of drugs</label><label onclick="cho(this,true)" data-c>C. Increase bioavailability of P-gp substrates</label><label onclick="cho(this,false)">D. Decrease renal clearance</label></div></div><div class="question"><p>3. Which drug is a classic P-gp substrate?</p><div class="opts"><label onclick="cho(this,false)">A. Paracetamol</label><label onclick="cho(this,false)">B. Metformin</label><label onclick="cho(this,true)" data-c>C. Digoxin</label><label onclick="cho(this,false)">D. Aspirin</label></div></div><div class="question"><p>4. Rifampicin induces P-gp expression. This would:</p><div class="opts"><label onclick="cho(this,false)">A. Increase cyclosporine bioavailability</label><label onclick="cho(this,true)" data-c>B. Decrease cyclosporine bioavailability — risk of rejection</label><label onclick="cho(this,false)">C. Have no effect on cyclosporine</label><label onclick="cho(this,false)">D. Increase digoxin toxicity</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics and Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;
+let t=0,running=true;
+
+let drugIn=[];
+for(let i=0;i<20;i++) drugIn.push({x:60+Math.random()*120,y:80+Math.random()*220,vx:0.5+Math.random()*0.3,ejected:false});
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  // Lumen
+  ctx.fillStyle='rgba(231,76,60,0.12)';ctx.fillRect(20,60,180,260);
+  ctx.strokeStyle='#E74C3C';ctx.lineWidth=1.5;ctx.strokeRect(20,60,180,260);
+  ctx.fillStyle='#E74C3C';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText('GIT Lumen',110,78);
+  // Enterocyte
+  ctx.fillStyle='rgba(155,89,182,0.2)';ctx.fillRect(200,60,160,260);
+  ctx.strokeStyle='#9B59B6';ctx.lineWidth=2;ctx.strokeRect(200,60,160,260);
+  ctx.fillStyle='#9B59B6';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText('Enterocyte',280,78);
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';ctx.fillText('(intestinal cell)',280,91);
+  // Blood
+  ctx.fillStyle='rgba(41,128,185,0.12)';ctx.fillRect(360,60,140,260);
+  ctx.strokeStyle='#3498DB';ctx.lineWidth=1.5;ctx.strokeRect(360,60,140,260);
+  ctx.fillStyle='#3498DB';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText('Portal Blood',430,78);
+
+  // P-gp pump (in enterocyte membrane facing lumen)
+  const pgpY=[110,185,260];
+  pgpY.forEach(py=>{
+    // P-gp protein
+    ctx.fillStyle='rgba(231,76,60,0.7)';
+    ctx.beginPath();ctx.arc(200,py,16,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#E74C3C';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='white';ctx.font='7px Arial';ctx.textAlign='center';
+    ctx.fillText('P-gp',200,py-3);ctx.fillText('pump',200,py+7);
+    // Efflux arrow
+    ctx.strokeStyle='#E74C3C';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(200,py);ctx.lineTo(165,py);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(170,py-5);ctx.lineTo(162,py);ctx.lineTo(170,py+5);ctx.fill();
+  });
+
+  // Absorption arrow (right side of enterocyte)
+  ctx.strokeStyle='#2ECC71';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(360,190);ctx.lineTo(400,190);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#2ECC71';ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText('Absorbed',430,185);ctx.fillText('fraction',430,197);
+
+  // Moving drug particles
+  drugIn.forEach(d=>{
+    d.x+=d.vx;
+    if(d.x>200&&d.x<360&&!d.ejected){
+      if(Math.random()<0.02){d.ejected=true;d.vx=-1.5;}
+    }
+    if(d.x>360){
+      ctx.beginPath();ctx.arc(d.x,d.y,4,0,Math.PI*2);
+      ctx.fillStyle='#2ECC71';ctx.globalAlpha=0.7;ctx.fill();ctx.globalAlpha=1;
+    } else {
+      ctx.beginPath();ctx.arc(d.x,d.y,4,0,Math.PI*2);
+      ctx.fillStyle=d.ejected?'#E74C3C':'#F39C12';ctx.globalAlpha=0.8;ctx.fill();ctx.globalAlpha=1;
+    }
+    if(d.x<20||d.x>500){d.x=60+Math.random()*100;d.y=80+Math.random()*220;d.ejected=false;d.vx=0.5+Math.random()*0.3;}
+  });
+
+  // Right panel — inhibitors
+  ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(510,60,200,260);
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1;ctx.strokeRect(510,60,200,260);
+  ctx.fillStyle='#AED6F1';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText('P-gp Inhibitors',610,80);
+  ctx.fillStyle='#AED6F1';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.fillText('(increase absorption)',610,95);
+  const inh=['Grapefruit juice','Verapamil','Cyclosporine','Ketoconazole','Ritonavir'];
+  const sub=['P-gp substrates','(reduced BA without inh.)','','Digoxin','Paclitaxel','Cyclosporine','HIV protease inhibitors'];
+  ctx.fillStyle='rgba(46,204,113,0.2)';ctx.fillRect(520,105,180,90);
+  ctx.strokeStyle='#2ECC71';ctx.lineWidth=1;ctx.strokeRect(520,105,180,90);
+  ctx.fillStyle='#2ECC71';ctx.font='bold 8px Arial';ctx.textAlign='left';ctx.fillText('P-gp Inhibitors:',528,120);
+  inh.forEach((s,i)=>{ctx.fillStyle='white';ctx.font='8px Arial';ctx.fillText('• '+s,528,132+i*12);});
+  ctx.fillStyle='rgba(231,76,60,0.2)';ctx.fillRect(520,205,180,100);
+  ctx.strokeStyle='#E74C3C';ctx.lineWidth=1;ctx.strokeRect(520,205,180,100);
+  ctx.fillStyle='#E74C3C';ctx.font='bold 8px Arial';ctx.textAlign='left';ctx.fillText('P-gp Substrates:',528,220);
+  sub.slice(3).forEach((s,i)=>{ctx.fillStyle='white';ctx.font='8px Arial';ctx.fillText('• '+s,528,232+i*12);});
+
+  // Info
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,300,44);
+  ctx.fillStyle='white';ctx.font='bold 13px Arial';ctx.textAlign='left';ctx.fillText('P-glycoprotein (P-gp) Efflux Pump',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('MDR1 transporter — pumps drugs back into gut lumen',18,46);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+
+</script></body></html>

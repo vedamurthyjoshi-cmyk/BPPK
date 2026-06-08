@@ -1,0 +1,155 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Enterohepatic Circulation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+h1{color:#fff;font-size:1.1rem;padding:10px;text-align:center}
+.tabs{display:flex;gap:6px;margin-bottom:8px}
+.tab{padding:6px 18px;border-radius:16px;cursor:pointer;font-size:.85rem;border:none;background:#16213e;color:#aaa}
+.tab.active{background:#e94560;color:#fff}
+canvas{border-radius:8px;background:#0f0f23}
+.info{position:absolute;top:60px;left:18px;background:rgba(0,0,0,0.65);color:#fff;font-size:.75rem;padding:8px 10px;border-radius:6px;max-width:200px;line-height:1.5}
+.wrap{position:relative}
+#mcq{display:none;width:720px;padding:16px;color:#fff}
+.q{margin-bottom:14px;font-size:.9rem}.opt{cursor:pointer;padding:6px 10px;margin:3px 0;border-radius:4px;background:#16213e}
+.opt:hover{background:#0f3460}.correct{background:#1a6b3a!important}.wrong{background:#6b1a1a!important}
+footer{color:#555;font-size:.72rem;margin:8px 0}
+</style></head><body>
+<h1>Enterohepatic Circulation — Biliary Excretion & Recycling</h1>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('anim')">Animation</button>
+  <button class="tab" onclick="showTab('theory')">Theory</button>
+  <button class="tab" onclick="showTab('mcq')">MCQs</button>
+</div>
+<div class="wrap">
+  <canvas id="c" width="720" height="380"></canvas>
+  <div class="info" id="info">Drug enters bile via liver,<br>released into intestine,<br>reabsorbed → prolongs action</div>
+</div>
+<div id="mcq" style="display:none;width:720px;padding:16px;color:#fff">
+  <div class="q"><b>Q1.</b> Enterohepatic circulation prolongs drug action by:
+    <div class="opt" onclick="cho(this,false)">a) Increasing renal clearance</div>
+    <div class="opt" data-c onclick="cho(this,true)">b) Recycling drug back into systemic circulation</div>
+    <div class="opt" onclick="cho(this,false)">c) Inhibiting hepatic metabolism</div>
+    <div class="opt" onclick="cho(this,false)">d) Increasing plasma protein binding</div>
+  </div>
+  <div class="q"><b>Q2.</b> Which antibiotic is known to undergo significant EHC?
+    <div class="opt" onclick="cho(this,false)">a) Amoxicillin</div>
+    <div class="opt" data-c onclick="cho(this,true)">b) Chloramphenicol</div>
+    <div class="opt" onclick="cho(this,false)">c) Ciprofloxacin</div>
+    <div class="opt" onclick="cho(this,false)">d) Gentamicin</div>
+  </div>
+  <div class="q"><b>Q3.</b> Interruption of EHC by antibiotics causes:
+    <div class="opt" data-c onclick="cho(this,true)">a) Reduced drug levels due to loss of recycled drug</div>
+    <div class="opt" onclick="cho(this,false)">b) Increased drug toxicity</div>
+    <div class="opt" onclick="cho(this,false)">c) Enhanced hepatic metabolism</div>
+    <div class="opt" onclick="cho(this,false)">d) Improved bioavailability</div>
+  </div>
+</div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+function showTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['anim','theory','mcq'][i]===t));
+  document.getElementById('c').style.display=t==='anim'?'block':'none';
+  document.getElementById('info').style.display=t==='anim'?'block':'none';
+  document.getElementById('mcq').style.display=t==='mcq'?'block':'none';
+}
+function cho(el,ok){el.style.background=ok?'#1a6b3a':'#6b1a1a';el.parentNode.querySelectorAll('[data-c]').forEach(e=>e.style.background='#1a6b3a');}
+
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let t=0;
+
+// Organ positions
+const liver={x:360,y:110,w:110,h:55};
+const bile={x:540,y:150,w:80,h:40};
+const gut={x:360,y:260,w:120,h:50};
+const portal={x:200,y:185};
+
+function organ(x,y,w,h,col,label){
+  cx.fillStyle=col; cx.beginPath();
+  cx.roundRect(x-w/2,y-h/2,w,h,10); cx.fill();
+  cx.fillStyle='#fff'; cx.font='bold 13px Arial'; cx.textAlign='center';
+  cx.fillText(label,x,y+5);
+}
+
+function drug(x,y,r,alpha){
+  cx.globalAlpha=alpha;
+  cx.fillStyle='#e94560'; cx.beginPath(); cx.arc(x,y,r,0,Math.PI*2); cx.fill();
+  cx.globalAlpha=1;
+}
+
+function arrow(x1,y1,x2,y2,col,label){
+  cx.strokeStyle=col; cx.lineWidth=2; cx.setLineDash([5,4]);
+  cx.beginPath(); cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.stroke();
+  cx.setLineDash([]);
+  // arrowhead
+  const ang=Math.atan2(y2-y1,x2-x1);
+  cx.fillStyle=col; cx.beginPath();
+  cx.moveTo(x2,y2);
+  cx.lineTo(x2-10*Math.cos(ang-0.4),y2-10*Math.sin(ang-0.4));
+  cx.lineTo(x2-10*Math.cos(ang+0.4),y2-10*Math.sin(ang+0.4));
+  cx.closePath(); cx.fill();
+  if(label){cx.fillStyle=col;cx.font='11px Arial';cx.textAlign='center';cx.fillText(label,(x1+x2)/2,(y1+y2)/2-6);}
+}
+
+function frame(){
+  cx.clearRect(0,0,720,380);
+  // background gradient
+  const g=cx.createLinearGradient(0,0,0,380);
+  g.addColorStop(0,'#0f0f23'); g.addColorStop(1,'#1a1a2e');
+  cx.fillStyle=g; cx.fillRect(0,0,720,380);
+
+  // Static organs
+  organ(360,110,120,55,'#c0392b','Liver');
+  organ(580,160,80,40,'#8e44ad','Bile Duct');
+  organ(360,270,130,50,'#1a6b3a','Intestine (GIT)');
+  organ(150,185,90,40,'#1a5276','Portal Vein');
+
+  // Labels
+  cx.fillStyle='#aaa'; cx.font='11px Arial'; cx.textAlign='center';
+  cx.fillText('Biliary excretion',500,115);
+  cx.fillText('of conjugates',500,128);
+  cx.fillText('Reabsorption',265,340);
+  cx.fillText('(EHC)',265,353);
+  cx.fillText('Portal blood',150,240);
+  cx.fillText('to liver',150,253);
+
+  // Arrows (static)
+  arrow(420,145,545,155,'#f39c12','');   // liver → bile
+  arrow(580,180,480,255,'#9b59b6','');   // bile → gut
+  arrow(295,270,200,210,'#27ae60','');   // gut → portal
+  arrow(200,165,300,120,'#e74c3c','');   // portal → liver
+
+  // Animated drug particles along the cycle
+  const speed=0.008;
+  const phase=(t*speed)%1;
+
+  // Drug going liver → bile
+  if(phase<0.25){
+    const p=phase/0.25;
+    drug(420+(545-420)*p, 145+(155-145)*p, 6, 1);
+  }
+  // Drug going bile → gut
+  if(phase>=0.25&&phase<0.5){
+    const p=(phase-0.25)/0.25;
+    drug(580+(480-580)*p, 180+(255-180)*p, 6, 1);
+  }
+  // Drug going gut → portal (reabsorption)
+  if(phase>=0.5&&phase<0.75){
+    const p=(phase-0.5)/0.25;
+    drug(295+(200-295)*p, 270+(210-270)*p, 6, 1);
+  }
+  // Drug going portal → liver (recycled!)
+  if(phase>=0.75){
+    const p=(phase-0.75)/0.25;
+    drug(200+(300-200)*p, 165+(120-165)*p, 6, 1);
+  }
+
+  // Cycle label
+  cx.fillStyle='#f39c12'; cx.font='bold 12px Arial'; cx.textAlign='center';
+  cx.fillText('Enterohepatic Circulation',360,30);
+  cx.fillStyle='#aaa'; cx.font='11px Arial';
+  cx.fillText('Drug recycled from bile → intestine → portal blood → liver → systemic',360,48);
+
+  t++; requestAnimationFrame(frame);
+}
+frame();
+</script></body></html>

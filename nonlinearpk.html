@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Nonlinear Pharmacokinetics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Nonlinear Pharmacokinetics — Michaelis-Menten Kinetics</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Nonlinear (Michaelis-Menten) Pharmacokinetics</h2><p>Most drugs follow first order (linear) kinetics where clearance is constant. But some drugs saturate their metabolising enzymes at therapeutic doses — the rate of metabolism becomes capacity-limited. This is Michaelis-Menten or nonlinear pharmacokinetics.</p><h3>Michaelis-Menten Equation</h3><p>Rate of metabolism = (Vmax × Cp) / (Km + Cp). Vmax = maximum rate of metabolism. Km = Michaelis constant = Cp at which rate = Vmax/2. When Cp &lt;&lt; Km: behaves like first order. When Cp &gt;&gt; Km: behaves like zero order — constant elimination rate regardless of dose.</p><h3>Classic Example: Phenytoin</h3><p>Small dose increments cause disproportionately large increases in Css. Half-life increases with dose. Requires individual TDM. Toxic levels are reached suddenly with small dose increases.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Nonlinear Pharmacokinetics</h2><div class="question"><p>1. Michaelis-Menten kinetics applies when:</p><div class="opts"><label onclick="cho(this,false)">A. Drug is excreted unchanged by kidneys</label>
+<label onclick="cho(this,true)" data-c>B. Metabolising enzymes become saturated at therapeutic concentrations</label>
+<label onclick="cho(this,false)">C. Drug follows first order kinetics throughout</label>
+<label onclick="cho(this,false)">D. Volume of distribution is very large</label>
+</div></div>
+<div class="question"><p>2. When Cp >> Km in Michaelis-Menten kinetics, elimination behaves like:</p><div class="opts"><label onclick="cho(this,false)">A. First order — constant fraction eliminated</label>
+<label onclick="cho(this,false)">B. Second order</label>
+<label onclick="cho(this,true)" data-c>C. Zero order — constant amount eliminated per time</label>
+<label onclick="cho(this,false)">D. Biphasic</label>
+</div></div>
+<div class="question"><p>3. A hallmark feature of nonlinear PK is that:</p><div class="opts"><label onclick="cho(this,false)">A. Half-life remains constant with increasing dose</label>
+<label onclick="cho(this,false)">B. AUC increases proportionally with dose</label>
+<label onclick="cho(this,true)" data-c>C. Small dose increases cause disproportionately large increases in Css</label>
+<label onclick="cho(this,false)">D. Clearance increases with dose</label>
+</div></div>
+</div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  const ox=80,oy=40,gw=580,gh=270;
+  const Vmax=10,Km=5;
+  function rate(cp){return Vmax*cp/(Km+cp);}
+
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+gh);ctx.lineTo(ox+gw,oy+gh);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='11px Arial';ctx.textAlign='center';
+  ctx.fillText('Plasma Concentration Cp (mg/L)',ox+gw/2,oy+gh+22);
+  ctx.save();ctx.translate(ox-35,oy+gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Rate of Metabolism (mg/h)',0,0);ctx.restore();
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='center';
+  ctx.fillText('Michaelis-Menten Saturation Kinetics',ox+gw/2,oy-12);
+
+  const maxCp=30;
+  function tx(cp){return ox+cp/maxCp*gw;}
+  function cy(r){return oy+gh*(1-r/Vmax);}
+
+  // Draw Michaelis-Menten curve
+  ctx.strokeStyle='#F39C12';ctx.lineWidth=3;ctx.beginPath();
+  for(let cp=0.1;cp<=maxCp;cp+=0.1){
+    const r=rate(cp);
+    if(cp===0.1)ctx.moveTo(tx(cp),cy(r));else ctx.lineTo(tx(cp),cy(r));
+  }ctx.stroke();
+
+  // Vmax line
+  ctx.strokeStyle='rgba(231,76,60,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(ox,cy(Vmax));ctx.lineTo(ox+gw,cy(Vmax));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#E74C3C';ctx.font='10px Arial';ctx.textAlign='left';
+  ctx.fillText('Vmax = '+Vmax+' mg/h (enzyme saturation)',ox+5,cy(Vmax)-6);
+
+  // Km line
+  ctx.strokeStyle='rgba(46,204,113,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(tx(Km),oy);ctx.lineTo(tx(Km),oy+gh);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,cy(Vmax/2));ctx.lineTo(tx(Km),cy(Vmax/2));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#2ECC71';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText('Km = '+Km+' mg/L',tx(Km),oy+gh+14);
+  ctx.fillStyle='#2ECC71';ctx.textAlign='right';ctx.fillText('Vmax/2',tx(Km)-5,cy(Vmax/2)+4);
+
+  // Animated dot on curve
+  const animCp=(Math.sin(t*0.015)+1)/2*maxCp*0.9+0.5;
+  const animR=rate(animCp);
+  ctx.beginPath();ctx.arc(tx(animCp),cy(animR),7,0,Math.PI*2);
+  ctx.fillStyle='#F39C12';ctx.fill();
+
+  // Regions
+  ctx.fillStyle='rgba(52,152,219,0.15)';ctx.fillRect(ox,cy(Vmax*0.9),tx(Km*0.3)-ox,gh-(gh-cy(Vmax)));
+  ctx.fillStyle='#3498DB';ctx.font='9px Arial';ctx.textAlign='center';
+  ctx.fillText('First order',tx(Km*0.15),cy(Vmax*0.3));
+  ctx.fillText('region',tx(Km*0.15),cy(Vmax*0.3)+12);
+
+  ctx.fillStyle='rgba(231,76,60,0.1)';ctx.fillRect(tx(Km*3),oy,gw-(tx(Km*3)-ox),gh);
+  ctx.fillStyle='#E74C3C';ctx.font='9px Arial';
+  ctx.fillText('Zero order region',tx(Km*4),cy(Vmax*0.95));
+  ctx.fillText('(saturation)',tx(Km*4),cy(Vmax*0.95)+12);
+
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,230,38);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('Michaelis-Menten Kinetics',18,27);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Rate = Vmax × Cp / (Km + Cp)',18,42);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

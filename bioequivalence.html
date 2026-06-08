@@ -1,0 +1,120 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Bioequivalence Study — 90% CI and 80-125% Window – Biopharmaceutics & Pharmacokinetics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Bioequivalence Study — 90% CI and 80-125% Window</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Bioequivalence Studies</h2><p>Two drug products are bioequivalent if they have the same bioavailability (rate and extent of absorption) within predefined statistical limits. BE studies are required for generic drug approval.</p><h3>Study Design</h3><p>Randomised, two-period, two-sequence crossover design. Single dose, fasting, healthy volunteers (n=12–24). Test (T) and Reference (R) products given with washout period ≥5 half-lives between periods.</p><h3>Statistical Analysis</h3><p>AUC and Cmax are log-transformed. 90% confidence interval of geometric mean T/R ratio must fall within 80–125% for both parameters. This is not a 20% tolerance — it is a statistical confidence requirement.</p><h3>Parameters Compared</h3><p>AUC (extent of absorption), Cmax (peak concentration — rate + extent), Tmax (indicative, not statistically tested). For modified-release: AUC, Cmax, Cmin or Cτ.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Bioequivalence</h2><div class="question"><p>1. The 90% confidence interval acceptance criterion for bioequivalence is:</p><div class="opts"><label onclick="cho(this,false)">A. 70–130%</label><label onclick="cho(this,false)">B. 85–115%</label><label onclick="cho(this,true)" data-c>C. 80–125%</label><label onclick="cho(this,false)">D. 90–110%</label></div></div><div class="question"><p>2. Bioequivalence studies use what type of design?</p><div class="opts"><label onclick="cho(this,false)">A. Parallel group, patient population</label><label onclick="cho(this,true)" data-c>B. Randomised, two-period, two-sequence crossover in healthy volunteers</label><label onclick="cho(this,false)">C. Single-arm, open-label</label><label onclick="cho(this,false)">D. Double-blind, placebo-controlled</label></div></div><div class="question"><p>3. The primary parameters assessed in a bioequivalence study are:</p><div class="opts"><label onclick="cho(this,false)">A. Vd and CL</label><label onclick="cho(this,false)">B. Tmax and t½ only</label><label onclick="cho(this,true)" data-c>C. AUC and Cmax</label><label onclick="cho(this,false)">D. Ke and Ka</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Two Cp-time curves: Reference (R) and Test (T)
+// Show AUC, Cmax, 90% CI window
+function Cp_ref(t){const Ka=0.6,Ke=0.1,F=0.8,D=100,Vd=10;return (F*D*Ka)/(Vd*(Ka-Ke))*(Math.exp(-Ke*t)-Math.exp(-Ka*t));}
+function Cp_test(t){const Ka=0.55,Ke=0.1,F=0.75,D=100,Vd=10;return (F*D*Ka)/(Vd*(Ka-Ke))*(Math.exp(-Ke*t)-Math.exp(-Ka*t));}
+const TMAX=36, CPMAX=12;
+const BX=60,BY=30,BW=400,BH=280;
+function toX(tm){return BX+tm*(BW/TMAX);}
+function toY(cp){return BY+BH-cp*(BH/CPMAX);}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  // Axes
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(BX,BY+BH);ctx.lineTo(BX+BW,BY+BH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(BX,BY+BH);ctx.lineTo(BX,BY);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (hours)',BX+BW/2,BY+BH+20);
+  ctx.save();ctx.translate(20,BY+BH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Cp (mg/L)',0,0);ctx.restore();
+  for(let i=0;i<=TMAX;i+=6){ctx.fillStyle='#555';ctx.font='8px Arial';ctx.textAlign='center';ctx.fillText(i,toX(i),BY+BH+12);}
+  for(let c=0;c<=CPMAX;c+=2){ctx.fillStyle='#555';ctx.font='8px Arial';ctx.textAlign='right';ctx.fillText(c,BX-3,toY(c)+3);}
+
+  // AUC shading
+  ctx.beginPath();ctx.moveTo(toX(0),toY(0));
+  for(let ti=0;ti<=TMAX;ti+=0.3) ctx.lineTo(toX(ti),toY(Math.max(0,Cp_ref(ti))));
+  ctx.lineTo(toX(TMAX),toY(0));ctx.closePath();
+  ctx.fillStyle='rgba(52,152,219,0.15)';ctx.fill();
+  ctx.beginPath();ctx.moveTo(toX(0),toY(0));
+  for(let ti=0;ti<=TMAX;ti+=0.3) ctx.lineTo(toX(ti),toY(Math.max(0,Cp_test(ti))));
+  ctx.lineTo(toX(TMAX),toY(0));ctx.closePath();
+  ctx.fillStyle='rgba(231,76,60,0.12)';ctx.fill();
+
+  // Reference curve
+  ctx.beginPath();ctx.strokeStyle='#3498DB';ctx.lineWidth=2.5;
+  ctx.moveTo(toX(0),toY(0));
+  for(let ti=0.1;ti<=TMAX;ti+=0.1) ctx.lineTo(toX(ti),toY(Math.max(0,Cp_ref(ti))));
+  ctx.stroke();
+  // Test curve
+  ctx.beginPath();ctx.strokeStyle='#E74C3C';ctx.lineWidth=2.5;ctx.setLineDash([6,3]);
+  ctx.moveTo(toX(0),toY(0));
+  for(let ti=0.1;ti<=TMAX;ti+=0.1) ctx.lineTo(toX(ti),toY(Math.max(0,Cp_test(ti))));
+  ctx.stroke();ctx.setLineDash([]);
+
+  // Animated cursor
+  const tNow=(t*0.2)%TMAX;
+  ctx.beginPath();ctx.arc(toX(tNow),toY(Math.max(0,Cp_ref(tNow))),4,0,Math.PI*2);ctx.fillStyle='#3498DB';ctx.fill();
+  ctx.beginPath();ctx.arc(toX(tNow),toY(Math.max(0,Cp_test(tNow))),4,0,Math.PI*2);ctx.fillStyle='#E74C3C';ctx.fill();
+
+  // Legend
+  ctx.fillStyle='#3498DB';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('── Reference (R)',BX+5,BY+15);
+  ctx.fillStyle='#E74C3C';ctx.fillText('- - Test (T)',BX+5,BY+30);
+
+  // Right panel: 90% CI decision
+  const panel={x:490,y:30,w:220,h:320};
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(panel.x,panel.y,panel.w,panel.h);
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1;ctx.strokeRect(panel.x,panel.y,panel.w,panel.h);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('Bioequivalence Decision',panel.x+panel.w/2,panel.y+18);
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';ctx.textAlign='left';
+
+  // CI bar chart
+  const metrics=[
+    {label:'AUC ratio',lo:90,hi:115,pass:true},
+    {label:'Cmax ratio',lo:85,hi:120,pass:true},
+  ];
+  metrics.forEach((m,i)=>{
+    const by=panel.y+50+i*110;
+    ctx.fillStyle='white';ctx.font='bold 9px Arial';ctx.textAlign='center';
+    ctx.fillText(m.label+' T/R×100',panel.x+panel.w/2,by);
+    // Draw axis 70-130
+    const ax=panel.x+10, aw=panel.w-20, ay=by+30;
+    ctx.strokeStyle='#555';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+aw,ay);ctx.stroke();
+    [80,90,100,110,120].forEach(v=>{
+      const vx=ax+(v-70)*(aw/60);
+      ctx.fillStyle='#555';ctx.font='7px Arial';ctx.textAlign='center';ctx.fillText(v,vx,ay+10);
+      ctx.strokeStyle='#333';ctx.beginPath();ctx.moveTo(vx,ay-3);ctx.lineTo(vx,ay+3);ctx.stroke();
+    });
+    // 80-125% window
+    const w80=ax+(80-70)*(aw/60), w125=ax+(125-70)*(aw/60);
+    ctx.fillStyle='rgba(46,204,113,0.25)';ctx.fillRect(w80,ay-15,w125-w80,30);
+    ctx.strokeStyle='#2ECC71';ctx.lineWidth=1;ctx.strokeRect(w80,ay-15,w125-w80,30);
+    ctx.fillStyle='#2ECC71';ctx.font='8px Arial';ctx.textAlign='center';
+    ctx.fillText('80–125% acceptance',panel.x+panel.w/2,ay-20);
+    // CI bar
+    const lo90=ax+(m.lo-70)*(aw/60), hi90=ax+(m.hi-70)*(aw/60);
+    ctx.fillStyle='rgba(231,76,60,0.7)';ctx.fillRect(lo90,ay-8,hi90-lo90,16);
+    ctx.fillStyle='#E74C3C';ctx.font='7px Arial';ctx.textAlign='center';
+    ctx.fillText('90% CI: ['+m.lo+'%, '+m.hi+'%]',panel.x+panel.w/2,ay+22);
+    ctx.fillStyle=m.pass?'#2ECC71':'#E74C3C';ctx.font='bold 10px Arial';
+    ctx.fillText(m.pass?'✓ PASS — Bioequivalent':'✗ FAIL',panel.x+panel.w/2,ay+36);
+  });
+
+  // Info
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,335,700,40);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='left';
+  ctx.fillText('BE Criterion: 90% CI of T/R ratio for AUC and Cmax must lie within 80–125%',18,352);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Crossover design (n≥12-24) | Log-transformed data | Statistical analysis by ANOVA',18,368);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

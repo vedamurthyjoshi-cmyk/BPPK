@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>One-Compartment IV Bolus – Biopharmaceutics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>One-Compartment IV Bolus — Cp-Time Profile</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>One-Compartment Open Model — IV Bolus</h2><p>After IV bolus injection, drug immediately enters the systemic circulation. The body is treated as a single compartment. Drug is eliminated by first order kinetics.</p><h3>Key Equation</h3><p>Cp = Cp(0) × e^(−Ke × t). Where Cp(0) = D/Vd, Ke = elimination rate constant = CL/Vd. Half-life t½ = 0.693/Ke. On a semi-log plot, this gives a straight line with slope = −Ke/2.303.</p><h3>Parameter Calculation from IV Bolus Data</h3><p>Plot Cp vs time on semi-log graph. Extrapolate line to t=0 → gives Cp(0) → Vd = Dose/Cp(0). Slope = −Ke/2.303 → Ke → t½ = 0.693/Ke. CL = Ke × Vd = Dose/AUC.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — One-Compartment IV Bolus</h2><div class="question"><p>1. After IV bolus of 500 mg, Cp(0) = 25 mg/L. What is the Vd?</p><div class="opts"><label onclick="cho(this,false)">A. 12.5 L</label>
+<label onclick="cho(this,true)" data-c>B. 20 L</label>
+<label onclick="cho(this,false)">C. 500 L</label>
+<label onclick="cho(this,false)">D. 2 L</label>
+</div></div>
+<div class="question"><p>2. The elimination rate constant Ke is related to half-life by:</p><div class="opts"><label onclick="cho(this,false)">A. Ke = t½/0.693</label>
+<label onclick="cho(this,false)">B. Ke = 0.693 × t½</label>
+<label onclick="cho(this,true)" data-c>C. Ke = 0.693/t½</label>
+<label onclick="cho(this,false)">D. Ke = t½²</label>
+</div></div>
+<div class="question"><p>3. On a semi-log plot, IV bolus decline is a:</p><div class="opts"><label onclick="cho(this,false)">A. Curve</label>
+<label onclick="cho(this,true)" data-c>B. Straight line (slope = -Ke/2.303)</label>
+<label onclick="cho(this,false)">C. Parabola</label>
+<label onclick="cho(this,false)">D. S-shaped curve</label>
+</div></div>
+</div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  const ox=80,oy=50,gw=580,gh=280;
+  const Ke=0.0035,Cp0=200;
+  const prog=Math.min((t%400)/400,1);
+
+  // Axes
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+gh);ctx.lineTo(ox+gw,oy+gh);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='11px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (h)',ox+gw/2,oy+gh+25);
+  ctx.save();ctx.translate(ox-35,oy+gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Plasma Concentration (mg/L)',0,0);ctx.restore();
+  ctx.fillStyle='#AED6F1';ctx.font='bold 12px Arial';
+  ctx.fillText('One-Compartment IV Bolus — Cp vs Time',ox+gw/2,oy-15);
+
+  // Grid lines
+  ctx.strokeStyle='rgba(74,144,217,0.2)';ctx.lineWidth=1;
+  for(let i=1;i<=4;i++){
+    ctx.beginPath();ctx.moveTo(ox,oy+gh*i/4);ctx.lineTo(ox+gw,oy+gh*i/4);ctx.stroke();
+    ctx.fillStyle='#666';ctx.font='9px Arial';ctx.textAlign='right';
+    ctx.fillText(Math.round(Cp0*(1-i/4)),ox-5,oy+gh*i/4+4);
+  }
+  for(let i=1;i<=6;i++){
+    ctx.beginPath();ctx.moveTo(ox+gw*i/6,oy);ctx.lineTo(ox+gw*i/6,oy+gh);ctx.stroke();
+    ctx.fillStyle='#666';ctx.font='9px Arial';ctx.textAlign='center';
+    ctx.fillText(Math.round(i*33),ox+gw*i/6,oy+gh+12);
+  }
+
+  // Draw curve up to prog
+  ctx.strokeStyle='#F39C12';ctx.lineWidth=2.5;ctx.beginPath();
+  for(let px=0;px<=gw*prog;px++){
+    const time=px/gw*200;
+    const cp=Cp0*Math.exp(-Ke*time);
+    const cy=oy+gh*(1-cp/Cp0);
+    if(px===0)ctx.moveTo(ox+px,cy);else ctx.lineTo(ox+px,cy);
+  }
+  ctx.stroke();
+
+  // Animated dot
+  const dotTime=prog*200;
+  const dotCp=Cp0*Math.exp(-Ke*dotTime);
+  const dotX=ox+prog*gw,dotY=oy+gh*(1-dotCp/Cp0);
+  ctx.beginPath();ctx.arc(dotX,dotY,7,0,Math.PI*2);
+  ctx.fillStyle='#F39C12';ctx.fill();
+
+  // Half-life markers
+  const hl1x=ox+(0.693/Ke)/200*gw;
+  const hl2x=ox+(2*0.693/Ke)/200*gw;
+  ctx.strokeStyle='rgba(46,204,113,0.6)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(hl1x,oy);ctx.lineTo(hl1x,oy+gh);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(hl2x,oy);ctx.lineTo(hl2x,oy+gh);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#2ECC71';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText('t½',hl1x,oy+gh+22);ctx.fillText('2t½',hl2x,oy+gh+22);
+
+  // Equation box
+  ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(ox+gw-200,oy+10,190,70);
+  ctx.fillStyle='#F39C12';ctx.font='bold 11px Arial';ctx.textAlign='left';
+  ctx.fillText('Cp = Cp(0) × e^(-Ke·t)',ox+gw-195,oy+30);
+  ctx.fillStyle='#ccc';ctx.font='10px Arial';
+  ctx.fillText('Cp(0) = D/Vd = 200 mg/L',ox+gw-195,oy+47);
+  ctx.fillText('Ke = 0.0035 h⁻¹',ox+gw-195,oy+62);
+  ctx.fillText('t½ = '+(0.693/Ke).toFixed(0)+' h',ox+gw-195,oy+77);
+
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,210,38);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('One-Compartment IV Bolus',18,27);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('First order elimination kinetics',18,42);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

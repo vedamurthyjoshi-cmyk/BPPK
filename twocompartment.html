@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Two-Compartment Model</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Two-Compartment Open Model — Alpha and Beta Phases</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Two-Compartment Open Model</h2><p>When plasma concentration-time data after IV bolus shows a biexponential decline (two distinct phases), a two-compartment model applies. The body is divided into a central compartment (plasma + well-perfused tissues) and a peripheral compartment (muscle, fat, skin).</p><h3>Biexponential Equation</h3><p>Cp = A·e^(-α·t) + B·e^(-β·t). Alpha (α) phase: rapid distribution from central to peripheral compartment. Beta (β) phase: slower elimination phase once distribution equilibrium is reached. t½α = 0.693/α, t½β = 0.693/β.</p><h3>Feathering (Residuals) Method</h3><p>Semi-log plot shows biphasic decline. Extrapolate terminal line to get B and β. Subtract to get residuals — gives A and α. Used to estimate all four parameters (A, B, α, β).</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Two-Compartment Model</h2><div class="question"><p>1. In a two-compartment model, the alpha phase represents:</p><div class="opts"><label onclick="cho(this,false)">A. Elimination from central compartment only</label>
+<label onclick="cho(this,true)" data-c>B. Distribution from central to peripheral compartment</label>
+<label onclick="cho(this,false)">C. Absorption after oral dose</label>
+<label onclick="cho(this,false)">D. Renal excretion</label>
+</div></div>
+<div class="question"><p>2. Which method is used to separate alpha and beta phases from a biexponential curve?</p><div class="opts"><label onclick="cho(this,false)">A. Trapezoidal rule</label>
+<label onclick="cho(this,false)">B. Wagner-Nelson method</label>
+<label onclick="cho(this,true)" data-c>C. Feathering (method of residuals)</label>
+<label onclick="cho(this,false)">D. Least squares regression directly</label>
+</div></div>
+<div class="question"><p>3. The clinical half-life of a two-compartment drug is determined by:</p><div class="opts"><label onclick="cho(this,false)">A. Alpha half-life (t½α)</label>
+<label onclick="cho(this,true)" data-c>B. Beta half-life (t½β) — the terminal elimination phase</label>
+<label onclick="cho(this,false)">C. The average of α and β</label>
+<label onclick="cho(this,false)">D. Zero order rate constant</label>
+</div></div>
+</div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  const ox=80,oy=40,gw=580,gh=290;
+  const A=150,alpha=0.08,B=50,beta=0.012;
+  const prog=Math.min((t%400)/400,1);
+  const maxT=120,maxCp=200;
+  function cp(time){return A*Math.exp(-alpha*time)+B*Math.exp(-beta*time);}
+  function tx(time){return ox+time/maxT*gw;}
+  function cy2(cp){return oy+gh-Math.log(cp)/Math.log(maxCp)*gh;}
+
+  // Axes
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+gh);ctx.lineTo(ox+gw,oy+gh);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='11px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (h)',ox+gw/2,oy+gh+22);
+  ctx.save();ctx.translate(ox-32,oy+gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('log Cp (mg/L)',0,0);ctx.restore();
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='center';
+  ctx.fillText('Two-Compartment IV Bolus — Semi-log Plot',ox+gw/2,oy-12);
+
+  // Log scale grid
+  [200,100,50,20,10,5].forEach(v=>{
+    const yy=cy2(v);
+    ctx.strokeStyle='rgba(74,144,217,0.2)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ox,yy);ctx.lineTo(ox+gw,yy);ctx.stroke();
+    ctx.fillStyle='#666';ctx.font='9px Arial';ctx.textAlign='right';ctx.fillText(v,ox-5,yy+4);
+  });
+
+  // Beta line (extrapolated terminal)
+  ctx.strokeStyle='rgba(231,76,60,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  for(let ti=0;ti<=maxT;ti+=2){
+    const y=cy2(B*Math.exp(-beta*ti));
+    if(ti===0)ctx.moveTo(tx(0),y);else ctx.lineTo(tx(ti),y);
+  }ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#E74C3C';ctx.font='10px Arial';ctx.textAlign='left';
+  ctx.fillText('β phase (t½β = '+(0.693/beta).toFixed(0)+'h)',tx(60),cy2(B*Math.exp(-beta*60))-8);
+
+  // Full biexponential curve
+  ctx.strokeStyle='#F39C12';ctx.lineWidth=2.5;ctx.beginPath();
+  for(let ti=0.5;ti<=maxT*prog;ti+=0.5){
+    const y=cy2(cp(ti));
+    if(ti===0.5)ctx.moveTo(tx(ti),y);else ctx.lineTo(tx(ti),y);
+  }ctx.stroke();
+
+  // Alpha phase annotation
+  ctx.fillStyle='#F39C12';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText('α phase (t½α='+(0.693/alpha).toFixed(1)+'h)',tx(8),cy2(cp(8))-12);
+
+  // Animated dot
+  const dotT=prog*maxT;
+  if(dotT>0.5){
+    const dotY=cy2(cp(dotT));
+    ctx.beginPath();ctx.arc(tx(dotT),dotY,7,0,Math.PI*2);
+    ctx.fillStyle='#F39C12';ctx.fill();
+  }
+
+  // Equation
+  ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(ox+gw-220,oy+5,210,60);
+  ctx.fillStyle='#F39C12';ctx.font='bold 10px Arial';ctx.textAlign='left';
+  ctx.fillText('Cp = A·e^(-α·t) + B·e^(-β·t)',ox+gw-215,oy+22);
+  ctx.fillStyle='#ccc';ctx.font='9px Arial';
+  ctx.fillText('A='+A+', α='+alpha+' h⁻¹',ox+gw-215,oy+37);
+  ctx.fillText('B='+B+', β='+beta+' h⁻¹',ox+gw-215,oy+50);
+  ctx.fillText('Biexponential decline',ox+gw-215,oy+63);
+
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,210,38);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('Two-Compartment Model',18,27);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Alpha (distribution) + Beta (elimination)',18,42);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

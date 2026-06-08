@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Absolute vs Relative Bioavailability</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+h1{color:#fff;font-size:1.1rem;padding:10px;text-align:center}
+.tabs{display:flex;gap:6px;margin-bottom:8px}.tab{padding:6px 18px;border-radius:16px;cursor:pointer;font-size:.85rem;border:none;background:#16213e;color:#aaa}.tab.active{background:#e94560;color:#fff}
+canvas{border-radius:8px}.info{position:absolute;top:60px;left:18px;background:rgba(0,0,0,0.65);color:#fff;font-size:.75rem;padding:8px 10px;border-radius:6px;max-width:200px;line-height:1.5}.wrap{position:relative}
+#mcq{display:none;width:720px;padding:16px;color:#fff}.q{margin-bottom:14px;font-size:.9rem}.opt{cursor:pointer;padding:6px 10px;margin:3px 0;border-radius:4px;background:#16213e}.opt:hover{background:#0f3460}.correct{background:#1a6b3a!important}.wrong{background:#6b1a1a!important}
+footer{color:#555;font-size:.72rem;margin:8px 0}
+</style></head><body>
+<h1>Absolute vs Relative Bioavailability</h1>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('anim')">Animation</button>
+  <button class="tab" onclick="showTab('theory')">Theory</button>
+  <button class="tab" onclick="showTab('mcq')">MCQs</button>
+</div>
+<div class="wrap">
+  <canvas id="c" width="720" height="380"></canvas>
+  <div class="info">F(abs) = AUC(oral)/AUC(IV) × 100%<br><br>F(rel) compares two non-IV formulations</div>
+</div>
+<div id="mcq" style="display:none;width:720px;padding:16px;color:#fff">
+  <div class="q"><b>Q1.</b> Absolute bioavailability is measured relative to:
+    <div class="opt" data-c onclick="cho(this,true)">a) Intravenous dose (F = 1.0 reference)</div>
+    <div class="opt" onclick="cho(this,false)">b) Another oral formulation</div>
+    <div class="opt" onclick="cho(this,false)">c) Intramuscular injection</div>
+    <div class="opt" onclick="cho(this,false)">d) Sublingual route</div>
+  </div>
+  <div class="q"><b>Q2.</b> If AUC(oral) = 60 mg·h/L and AUC(IV) = 100 mg·h/L at same dose, F =
+    <div class="opt" onclick="cho(this,false)">a) 100%</div>
+    <div class="opt" onclick="cho(this,false)">b) 40%</div>
+    <div class="opt" data-c onclick="cho(this,true)">c) 60%</div>
+    <div class="opt" onclick="cho(this,false)">d) 160%</div>
+  </div>
+  <div class="q"><b>Q3.</b> Relative bioavailability is useful for:
+    <div class="opt" onclick="cho(this,false)">a) Establishing absolute absorption fraction</div>
+    <div class="opt" data-c onclick="cho(this,true)">b) Comparing two oral formulations or routes</div>
+    <div class="opt" onclick="cho(this,false)">c) Measuring renal clearance</div>
+    <div class="opt" onclick="cho(this,false)">d) Calculating volume of distribution</div>
+  </div>
+</div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+function showTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['anim','theory','mcq'][i]===t));
+  document.getElementById('c').style.display=t==='anim'?'block':'none';
+  document.getElementById('info').style.display=t==='anim'?'block':'none';
+  document.getElementById('mcq').style.display=t==='mcq'?'block':'none';
+}
+function cho(el,ok){el.style.background=ok?'#1a6b3a':'#6b1a1a';el.parentNode.querySelectorAll('[data-c]').forEach(e=>e.style.background='#1a6b3a');}
+
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let t=0;
+
+const W=720,H=380,PAD=60,GW=W-PAD-40,GH=H-100;
+const ox=PAD,oy=H-60;
+
+// IV bolus curve: Cp = 100*e^(-0.15t)
+// Oral curve: Cp = 80*(e^(-0.1t)-e^(-0.5t))
+const iv=(x)=>100*Math.exp(-0.15*x);
+const oral=(x)=>70*(Math.exp(-0.08*x)-Math.exp(-0.45*x));
+const oral2=(x)=>42*(Math.exp(-0.08*x)-Math.exp(-0.45*x)); // relative ref
+
+const tMax=30,cpMax=110;
+const sx=(time)=>ox+time/tMax*GW;
+const sy=(cp)=>oy-cp/cpMax*GH;
+
+function drawCurve(fn,col,label,dashAnim){
+  cx.strokeStyle=col; cx.lineWidth=2.5;
+  cx.setLineDash(dashAnim?[6,4]:[]);
+  cx.beginPath();
+  for(let tt=0;tt<=30;tt+=0.3){
+    const y=sy(fn(tt));
+    tt===0?cx.moveTo(sx(tt),y):cx.lineTo(sx(tt),y);
+  }
+  cx.stroke(); cx.setLineDash([]);
+  // label at peak
+  let pkT=0,pkV=0;
+  for(let tt=0;tt<=30;tt+=0.1){const v=fn(tt);if(v>pkV){pkV=v;pkT=tt;}}
+  cx.fillStyle=col; cx.font='bold 12px Arial'; cx.textAlign='left';
+  cx.fillText(label,sx(pkT)+8,sy(pkV));
+}
+
+function fillAUC(fn,col,alpha){
+  cx.globalAlpha=alpha;
+  cx.fillStyle=col;
+  cx.beginPath();
+  cx.moveTo(sx(0),sy(0));
+  for(let tt=0;tt<=30;tt+=0.3) cx.lineTo(sx(tt),sy(fn(tt)));
+  cx.lineTo(sx(30),sy(0));
+  cx.closePath(); cx.fill();
+  cx.globalAlpha=1;
+}
+
+function axes(){
+  cx.strokeStyle='#444'; cx.lineWidth=1.5; cx.beginPath();
+  cx.moveTo(ox,20); cx.lineTo(ox,oy); cx.lineTo(ox+GW,oy); cx.stroke();
+  cx.fillStyle='#aaa'; cx.font='12px Arial'; cx.textAlign='center';
+  cx.fillText('Time (h)',ox+GW/2,oy+30);
+  cx.save(); cx.translate(ox-35,oy-GH/2); cx.rotate(-Math.PI/2);
+  cx.fillText('Cp (mg/L)',0,0); cx.restore();
+  // tick marks
+  cx.fillStyle='#666'; cx.font='10px Arial';
+  for(let i=0;i<=5;i++){
+    const x=ox+i*(GW/5);
+    cx.fillText(i*6+'h',x,oy+15);
+  }
+}
+
+const phaseLen=180;
+function frame(){
+  cx.clearRect(0,0,W,H);
+  const bg=cx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0f0f23'); bg.addColorStop(1,'#1a1a2e');
+  cx.fillStyle=bg; cx.fillRect(0,0,W,H);
+
+  const phase=Math.floor(t/phaseLen)%3;
+  const pt=(t%phaseLen)/phaseLen;
+
+  axes();
+
+  cx.fillStyle='#fff'; cx.font='bold 13px Arial'; cx.textAlign='center';
+  cx.fillText('Bioavailability Comparison',W/2,22);
+
+  if(phase===0){
+    // IV curve with AUC fill
+    fillAUC(iv,'#3498db',0.18);
+    drawCurve(iv,'#3498db','IV bolus (F=1.0)',false);
+    // animated drug building up oral
+    const animT=pt*30;
+    cx.strokeStyle='#e74c3c'; cx.lineWidth=2.5; cx.beginPath();
+    for(let tt=0;tt<=animT;tt+=0.3){
+      const y=sy(oral(tt));
+      tt===0?cx.moveTo(sx(tt),y):cx.lineTo(sx(tt),y);
+    }
+    cx.stroke();
+    cx.fillStyle='#fff'; cx.font='12px Arial'; cx.textAlign='center';
+    cx.fillText('Oral dose building → AUC(oral) < AUC(IV)',W/2,355);
+  } else if(phase===1){
+    // Both curves + AUC shading
+    fillAUC(iv,'#3498db',0.15);
+    fillAUC(oral,'#e74c3c',0.2);
+    drawCurve(iv,'#3498db','IV (AUC=100)',false);
+    drawCurve(oral,'#e74c3c','Oral (AUC=60)',false);
+    // Formula
+    cx.fillStyle='#f1c40f'; cx.font='bold 13px Arial'; cx.textAlign='center';
+    cx.fillText('F (absolute) = AUC(oral) / AUC(IV) = 60/100 = 60%',W/2,355);
+    // AUC labels
+    cx.fillStyle='rgba(52,152,219,0.7)'; cx.font='11px Arial'; cx.textAlign='center';
+    cx.fillText('AUC(IV)=100',sx(22),sy(8));
+    cx.fillStyle='rgba(231,76,60,0.9)';
+    cx.fillText('AUC(oral)=60',sx(14),sy(5));
+  } else {
+    // Relative: oral vs oral2
+    fillAUC(oral,'#e74c3c',0.2);
+    fillAUC(oral2,'#2ecc71',0.2);
+    drawCurve(oral,'#e74c3c','Test oral (AUC=70)',false);
+    drawCurve(oral2,'#2ecc71','Reference oral (AUC=42)',true);
+    cx.fillStyle='#f1c40f'; cx.font='bold 13px Arial'; cx.textAlign='center';
+    cx.fillText('F (relative) = AUC(test) / AUC(reference) × 100 = 167%',W/2,355);
+  }
+
+  // Phase label top right
+  const labels=['Phase 1: Absolute BA — IV vs Oral','Phase 2: Calculating Absolute F','Phase 3: Relative Bioavailability'];
+  cx.fillStyle='#aaa'; cx.font='11px Arial'; cx.textAlign='right';
+  cx.fillText(labels[phase],W-20,22);
+
+  t++; requestAnimationFrame(frame);
+}
+frame();
+</script></body></html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>IVIVC — In Vitro In Vivo Correlation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+h1{color:#fff;font-size:1.1rem;padding:10px;text-align:center}.tabs{display:flex;gap:6px;margin-bottom:8px}
+.tab{padding:6px 18px;border-radius:16px;cursor:pointer;font-size:.85rem;border:none;background:#16213e;color:#aaa}.tab.active{background:#e94560;color:#fff}
+canvas{border-radius:8px}.info{position:absolute;top:60px;left:18px;background:rgba(0,0,0,0.65);color:#fff;font-size:.75rem;padding:8px 10px;border-radius:6px;max-width:190px;line-height:1.5}.wrap{position:relative}
+#mcq{display:none;width:720px;padding:16px;color:#fff}.q{margin-bottom:14px;font-size:.9rem}.opt{cursor:pointer;padding:6px 10px;margin:3px 0;border-radius:4px;background:#16213e}.opt:hover{background:#0f3460}
+footer{color:#555;font-size:.72rem;margin:8px 0}
+</style></head><body>
+<h1>IVIVC — In Vitro–In Vivo Correlation (Levels A, B, C)</h1>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('anim')">Animation</button>
+  <button class="tab" onclick="showTab('theory')">Theory</button>
+  <button class="tab" onclick="showTab('mcq')">MCQs</button>
+</div>
+<div class="wrap">
+  <canvas id="c" width="720" height="380"></canvas>
+  <div class="info">Level A: point-by-point correlation of % dissolved vs % absorbed — strongest IVIVC<br><br>Enables dissolution test as surrogate for BA</div>
+</div>
+<div id="mcq" style="display:none;width:720px;padding:16px;color:#fff">
+  <div class="q"><b>Q1.</b> Which IVIVC level provides the most informative correlation?
+    <div class="opt" data-c onclick="cho(this,true)">a) Level A</div>
+    <div class="opt" onclick="cho(this,false)">b) Level B</div>
+    <div class="opt" onclick="cho(this,false)">c) Level C</div>
+    <div class="opt" onclick="cho(this,false)">d) Level D</div>
+  </div>
+  <div class="q"><b>Q2.</b> A good Level A IVIVC allows:
+    <div class="opt" onclick="cho(this,false)">a) Measuring renal clearance in vitro</div>
+    <div class="opt" data-c onclick="cho(this,true)">b) Using dissolution data to predict in vivo BA without new human studies</div>
+    <div class="opt" onclick="cho(this,false)">c) Skipping stability testing</div>
+    <div class="opt" onclick="cho(this,false)">d) Replacing clinical trials for new chemical entities</div>
+  </div>
+  <div class="q"><b>Q3.</b> Level C IVIVC correlates:
+    <div class="opt" onclick="cho(this,false)">a) Full dissolution profile with full plasma profile</div>
+    <div class="opt" onclick="cho(this,false)">b) Mean dissolution time with MRT</div>
+    <div class="opt" data-c onclick="cho(this,true)">c) A single dissolution time point (e.g. t50%) with a single PK parameter (e.g. Cmax)</div>
+    <div class="opt" onclick="cho(this,false)">d) AUC with cumulative dissolved amount</div>
+  </div>
+</div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+function showTab(t){document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['anim','theory','mcq'][i]===t));document.getElementById('c').style.display=t==='anim'?'block':'none';document.getElementById('info').style.display=t==='anim'?'block':'none';document.getElementById('mcq').style.display=t==='mcq'?'block':'none';}
+function cho(el,ok){el.style.background=ok?'#1a6b3a':'#6b1a1a';el.parentNode.querySelectorAll('[data-c]').forEach(e=>e.style.background='#1a6b3a');}
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let t=0;
+
+// Level A: % dissolved vs % absorbed (should be linear)
+// Three formulations: Fast, Medium, Slow
+const forms=[
+  {name:'Fast release',  col:'#2ecc71', diss:(t)=>Math.min(100,100*(1-Math.exp(-0.3*t))), abs:(t)=>Math.min(100,100*(1-Math.exp(-0.28*t)))},
+  {name:'Medium release',col:'#f1c40f', diss:(t)=>Math.min(100,100*(1-Math.exp(-0.12*t))),abs:(t)=>Math.min(100,100*(1-Math.exp(-0.11*t)))},
+  {name:'Slow release',  col:'#e74c3c', diss:(t)=>Math.min(100,100*(1-Math.exp(-0.05*t))),abs:(t)=>Math.min(100,100*(1-Math.exp(-0.045*t)))},
+];
+
+const phaseLen=200;
+function frame(){
+  cx.clearRect(0,0,720,380);
+  cx.fillStyle='#0f0f23'; cx.fillRect(0,0,720,380);
+
+  const phase=Math.floor(t/phaseLen)%3;
+  const pt=Math.min(1,(t%phaseLen)/phaseLen);
+  const tshow=pt*24; // 0..24h
+
+  // Left panel: dissolution profiles
+  const lox=60,loy=310,lgw=270,lgh=230;
+  cx.strokeStyle='#444'; cx.lineWidth=1.5; cx.beginPath();
+  cx.moveTo(lox,loy-lgh); cx.lineTo(lox,loy); cx.lineTo(lox+lgw,loy); cx.stroke();
+  cx.fillStyle='#aaa'; cx.font='11px Arial'; cx.textAlign='center';
+  cx.fillText('In Vitro Dissolution (%)',lox+lgw/2,loy+22);
+  cx.save(); cx.translate(lox-28,loy-lgh/2); cx.rotate(-Math.PI/2); cx.fillText('% Dissolved',0,0); cx.restore();
+  cx.fillStyle='#fff'; cx.font='bold 12px Arial'; cx.fillText('In Vitro Profiles',lox+lgw/2,loy-lgh-14);
+
+  forms.forEach(f=>{
+    cx.strokeStyle=f.col; cx.lineWidth=2; cx.beginPath();
+    for(let tt=0;tt<=24;tt+=0.5){
+      const x=lox+tt/24*lgw, y=loy-f.diss(tt)/100*lgh;
+      tt===0?cx.moveTo(x,y):cx.lineTo(x,y);
+    }
+    cx.stroke();
+    cx.fillStyle=f.col; cx.font='10px Arial'; cx.textAlign='left';
+    cx.fillText(f.name,lox+lgw*0.65,loy-f.diss(24)/100*lgh+4);
+  });
+
+  // Right panel: Level A correlation scatter
+  const rox=440,roy=310,rgw=230,rgh=230;
+  cx.strokeStyle='#444'; cx.lineWidth=1.5; cx.beginPath();
+  cx.moveTo(rox,roy-rgh); cx.lineTo(rox,roy); cx.lineTo(rox+rgw,roy); cx.stroke();
+  cx.fillStyle='#aaa'; cx.font='11px Arial'; cx.textAlign='center';
+  cx.fillText('% Dissolved (in vitro)',rox+rgw/2,roy+22);
+  cx.save(); cx.translate(rox-28,roy-rgh/2); cx.rotate(-Math.PI/2); cx.fillText('% Absorbed (in vivo)',0,0); cx.restore();
+  cx.fillStyle='#fff'; cx.font='bold 12px Arial'; cx.fillText('Level A IVIVC Plot',rox+rgw/2,roy-rgh-14);
+
+  // Ideal line
+  cx.strokeStyle='#555'; cx.lineWidth=1; cx.setLineDash([4,4]);
+  cx.beginPath(); cx.moveTo(rox,roy); cx.lineTo(rox+rgw,roy-rgh); cx.stroke();
+  cx.setLineDash([]);
+  cx.fillStyle='#555'; cx.font='10px Arial'; cx.textAlign='right';
+  cx.fillText('Ideal 1:1',rox+rgw-4,roy-rgh+14);
+
+  // Plot correlation points for each formulation up to tshow
+  forms.forEach(f=>{
+    cx.fillStyle=f.col;
+    for(let tt=0;tt<=tshow;tt+=1){
+      const d=f.diss(tt), a=f.abs(tt);
+      cx.beginPath();
+      cx.arc(rox+d/100*rgw, roy-a/100*rgh, 3,0,Math.PI*2); cx.fill();
+    }
+    // Legend
+    const li=forms.indexOf(f);
+    cx.fillStyle=f.col; cx.font='10px Arial'; cx.textAlign='left';
+    cx.fillText('■ '+f.name,rox,roy-rgh+14+li*16);
+  });
+
+  // Bottom bar — levels explanation
+  cx.fillStyle='#1a1a2e'; cx.fillRect(0,340,720,40);
+  const lvls=['Level A: Full dissolution profile correlates with full absorption profile (best)',
+              'Level B: Mean dissolution time vs MRT (statistical moments)',
+              'Level C: Single point (e.g. t50%) vs single PK parameter (Cmax)'];
+  cx.fillStyle='#f1c40f'; cx.font='11px Arial'; cx.textAlign='center';
+  cx.fillText(lvls[phase],360,360);
+
+  t++; requestAnimationFrame(frame);
+}
+frame();
+</script></body></html>

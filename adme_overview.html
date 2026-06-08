@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>ADME Overview – Biopharmaceutics & Pharmacokinetics</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}
+.tabs{display:flex;gap:4px;margin-bottom:6px}
+.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}
+.tab.active{background:#4A90D9;color:#fff}
+.panel{display:none;width:720px}.panel.active{display:block}
+canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}
+.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}
+button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}
+button:hover{background:#1F618D}
+.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}
+.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}
+.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}
+.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}
+.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}
+.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}
+.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}
+.opts label:hover{background:#1F618D}
+.opts label.correct{background:#1e7e34;color:#fff}
+.opts label.wrong{background:#721c24;color:#fff}
+footer{font-size:0.75rem;color:#555;margin:8px 0 4px}
+</style></head><body>
+<h1>ADME Overview — Drug Journey Through the Body</h1>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('anim')">Animation</div>
+  <div class="tab" onclick="showTab('theory')">Theory</div>
+  <div class="tab" onclick="showTab('mcq')">MCQs</div>
+</div>
+<div class="panel active" id="anim">
+<canvas id="cv" width="720" height="380"></canvas>
+<div class="controls">
+  <button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button>
+  <button onclick="t=0;particles=[];initParticles()">Reset</button>
+</div>
+</div>
+<div class="panel" id="theory">
+<div class="theory">
+<h2>ADME — The Four Processes of Drug Fate</h2>
+<p>After a drug is administered, it undergoes four sequential processes collectively called ADME. The plasma concentration-time profile of any drug is the net result of all four processes occurring simultaneously.</p>
+<h3>A — Absorption</h3>
+<p>Movement of drug from the site of administration into the systemic circulation. Rate and extent depend on drug physicochemical properties, formulation, and physiological factors. Oral absorption involves dissolution, GI transit, and membrane permeation.</p>
+<h3>D — Distribution</h3>
+<p>Drug leaving blood and entering tissues. Determined by plasma protein binding, tissue binding, lipophilicity, and blood flow. Described quantitatively by Volume of Distribution (Vd).</p>
+<h3>M — Metabolism</h3>
+<p>Biotransformation of drug, primarily in liver. Phase I (CYP450 — oxidation, reduction, hydrolysis) and Phase II (conjugation). May produce active, inactive, or toxic metabolites.</p>
+<h3>E — Elimination</h3>
+<p>Removal of drug from body — via renal excretion (unchanged drug or metabolites) and biliary excretion. Described by clearance (CL) and half-life (t½).</p>
+</div>
+</div>
+<div class="panel" id="mcq">
+<div class="mcq">
+<h2>MCQs — ADME Overview</h2>
+<div class="question"><p>1. The correct sequence of drug fate after oral administration is:</p>
+<div class="opts">
+  <label onclick="cho(this,true)" data-c>A. Absorption → Distribution → Metabolism → Elimination</label>
+  <label onclick="cho(this,false)">B. Distribution → Absorption → Elimination → Metabolism</label>
+  <label onclick="cho(this,false)">C. Metabolism → Absorption → Distribution → Elimination</label>
+  <label onclick="cho(this,false)">D. Absorption → Metabolism → Elimination → Distribution</label>
+</div></div>
+<div class="question"><p>2. Volume of Distribution (Vd) is a measure of:</p>
+<div class="opts">
+  <label onclick="cho(this,false)">A. Rate of drug absorption</label>
+  <label onclick="cho(this,true)" data-c>B. Extent of drug distribution into tissues relative to plasma</label>
+  <label onclick="cho(this,false)">C. Rate of drug metabolism</label>
+  <label onclick="cho(this,false)">D. Renal clearance of drug</label>
+</div></div>
+<div class="question"><p>3. Phase I metabolism primarily involves:</p>
+<div class="opts">
+  <label onclick="cho(this,false)">A. Glucuronidation and sulfation</label>
+  <label onclick="cho(this,true)" data-c>B. Oxidation, reduction, and hydrolysis via CYP450 enzymes</label>
+  <label onclick="cho(this,false)">C. Acetylation and methylation</label>
+  <label onclick="cho(this,false)">D. Renal tubular secretion</label>
+</div></div>
+<div class="question"><p>4. Clearance (CL) in pharmacokinetics represents:</p>
+<div class="opts">
+  <label onclick="cho(this,false)">A. Volume in which drug is distributed</label>
+  <label onclick="cho(this,false)">B. Time for drug concentration to halve</label>
+  <label onclick="cho(this,true)" data-c>C. Volume of plasma cleared of drug per unit time</label>
+  <label onclick="cho(this,false)">D. Fraction of dose reaching systemic circulation</label>
+</div></div>
+</div>
+</div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;
+let t=0,running=true,particles=[];
+
+// Organs layout
+const organs={
+  gut:    {x:80,  y:180, w:90,  h:70,  col:'#8D6E63', label:'GIT\n(Absorption)', icon:'🍊'},
+  liver:  {x:250, y:120, w:90,  h:70,  col:'#922B21', label:'Liver\n(Metabolism)', icon:'🔴'},
+  blood:  {x:250, y:220, w:90,  h:50,  col:'#1A5276', label:'Blood\n(Circulation)', icon:'💉'},
+  tissue: {x:430, y:150, w:90,  h:80,  col:'#145A32', label:'Tissues\n(Distribution)', icon:'🫀'},
+  kidney: {x:580, y:200, w:90,  h:70,  col:'#7D6608', label:'Kidney\n(Elimination)', icon:'🫘'},
+};
+
+function initParticles(){
+  particles=[];
+  for(let i=0;i<60;i++){
+    particles.push({
+      x:80+Math.random()*90, y:180+Math.random()*70,
+      stage:0, progress:Math.random(),
+      speed:0.002+Math.random()*0.002,
+      size:3+Math.random()*2,
+      alpha:0.8+Math.random()*0.2
+    });
+  }
+}
+initParticles();
+
+// Stage paths: gut→blood→liver→blood→tissue→blood→kidney
+const paths=[
+  {from:'gut',   to:'blood',  color:'#F39C12'},
+  {from:'blood', to:'liver',  color:'#E74C3C'},
+  {from:'liver', to:'blood',  color:'#922B21'},
+  {from:'blood', to:'tissue', color:'#27AE60'},
+  {from:'tissue',to:'blood',  color:'#2ECC71'},
+  {from:'blood', to:'kidney', color:'#F1C40F'},
+];
+
+function organCenter(name){
+  const o=organs[name];
+  return {x:o.x+o.w/2, y:o.y+o.h/2};
+}
+
+function drawOrgan(o){
+  ctx.fillStyle=o.col+'99';
+  ctx.fillRect(o.x,o.y,o.w,o.h);
+  ctx.strokeStyle=o.col;ctx.lineWidth=2;
+  ctx.strokeRect(o.x,o.y,o.w,o.h);
+  ctx.fillStyle='white';ctx.font='bold 9px Arial';ctx.textAlign='center';
+  const lines=o.label.split('\n');
+  lines.forEach((l,i)=>ctx.fillText(l,o.x+o.w/2,o.y+o.h/2-4+i*13));
+}
+
+function drawArrow(x1,y1,x2,y2,col,label){
+  ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.setLineDash([]);
+  const a=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=col;
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-10*Math.cos(a-0.4),y2-10*Math.sin(a-0.4));
+  ctx.lineTo(x2-10*Math.cos(a+0.4),y2-10*Math.sin(a+0.4));
+  ctx.closePath();ctx.fill();
+  if(label){ctx.fillStyle=col;ctx.font='9px Arial';ctx.textAlign='center';
+    ctx.fillText(label,(x1+x2)/2,(y1+y2)/2-6);}
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,220,46);
+  ctx.fillStyle='white';ctx.font='bold 13px Arial';ctx.textAlign='left';
+  ctx.fillText('ADME — Drug in the Body',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Absorption → Distribution → Metabolism → Elimination',18,44);
+
+  // Draw flow arrows
+  const gc=organCenter('gut'), bc=organCenter('blood'),
+        lc=organCenter('liver'), tc=organCenter('tissue'), kc=organCenter('kidney');
+  drawArrow(gc.x+45,gc.y,bc.x-45,bc.y,'#F39C12','Absorption');
+  drawArrow(bc.x,bc.y-25,lc.x,lc.y+35,'#E74C3C','');
+  drawArrow(lc.x,lc.y+35,bc.x,bc.y-25,'#922B21','Metabolism');
+  drawArrow(bc.x+45,bc.y,tc.x-45,tc.y,'#27AE60','Distribution');
+  drawArrow(tc.x+45,tc.y,kc.x-45,kc.y,'#F1C40F','');
+  drawArrow(kc.x,kc.y+35,kc.x,H-20,'#E67E22','Elimination');
+
+  // Draw organs
+  Object.values(organs).forEach(drawOrgan);
+
+  // Moving drug particles
+  particles.forEach(p=>{
+    const stageList=['gut','blood','liver','blood','tissue','kidney'];
+    const si=Math.min(Math.floor(p.progress*6),5);
+    const s1=organCenter(stageList[si]);
+    const s2=organCenter(stageList[Math.min(si+1,5)]);
+    const frac=(p.progress*6)%1;
+    const px=s1.x+(s2.x-s1.x)*frac+Math.sin(t*0.05+p.y)*2;
+    const py=s1.y+(s2.y-s1.y)*frac+Math.cos(t*0.04+p.x)*2;
+    const stageColors=['#F39C12','#3498DB','#E74C3C','#3498DB','#2ECC71','#F1C40F'];
+    ctx.beginPath();ctx.arc(px,py,p.size,0,Math.PI*2);
+    ctx.fillStyle=stageColors[si];ctx.globalAlpha=p.alpha*0.8;ctx.fill();ctx.globalAlpha=1;
+    p.progress+=p.speed;
+    if(p.progress>1){p.progress=0;}
+  });
+
+  // ADME labels at bottom
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(10,345,700,28);
+  const labels=[{t:'A — Absorption',c:'#F39C12',x:100},{t:'D — Distribution',c:'#27AE60',x:270},
+                {t:'M — Metabolism',c:'#E74C3C',x:440},{t:'E — Elimination',c:'#F1C40F',x:610}];
+  labels.forEach(l=>{ctx.fillStyle=l.c;ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText(l.t,l.x,363);});
+}
+
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

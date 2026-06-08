@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Plasma Protein Binding – Biopharmaceutics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Plasma Protein Binding — Drug-Albumin Interaction</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Plasma Protein Binding</h2><p>Drugs in the bloodstream reversibly bind to plasma proteins, mainly albumin (for acidic drugs) and alpha-1-acid glycoprotein (for basic drugs). Only the unbound (free) drug is pharmacologically active, can cross membranes, and can be eliminated.</p><h3>Key Parameters</h3><p>Fraction unbound (fu) = Cfree / Ctotal. Highly bound drugs (fu &lt; 0.1): warfarin (99% bound), phenytoin (90% bound). Low binding: lithium (0%), aminoglycosides (~10%).</p><h3>Clinical Significance</h3><p>Drug interactions at protein binding sites can displace one drug, transiently increasing its free concentration. Hypoalbuminaemia (liver disease, malnutrition) increases free drug fraction, potentially causing toxicity at normal doses. Volume of distribution is affected by protein binding.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Plasma Protein Binding</h2><div class="question"><p>1. Only the __ form of a drug crosses membranes and produces pharmacological effect.</p><div class="opts"><label onclick="cho(this,false)">A. Total drug (bound + free)</label>
+<label onclick="cho(this,false)">B. Protein-bound drug</label>
+<label onclick="cho(this,true)" data-c>C. Free (unbound) drug</label>
+<label onclick="cho(this,false)">D. Ionised drug only</label>
+</div></div>
+<div class="question"><p>2. Warfarin is 99% bound to plasma proteins. What fraction is pharmacologically active?</p><div class="opts"><label onclick="cho(this,false)">A. 99%</label>
+<label onclick="cho(this,false)">B. 50%</label>
+<label onclick="cho(this,false)">C. 10%</label>
+<label onclick="cho(this,true)" data-c>D. 1% (free fraction)</label>
+</div></div>
+<div class="question"><p>3. Hypoalbuminaemia would most likely cause:</p><div class="opts"><label onclick="cho(this,false)">A. Reduced drug effect due to less distribution</label>
+<label onclick="cho(this,false)">B. Increased protein binding</label>
+<label onclick="cho(this,true)" data-c>C. Increased free drug fraction and potential toxicity</label>
+<label onclick="cho(this,false)">D. No change in pharmacokinetics</label>
+</div></div>
+</div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Albumin molecule (large circle) with drug particles binding and unbinding
+let drugs=[];
+for(let i=0;i<30;i++){
+  const angle=Math.random()*Math.PI*2, r=80+Math.random()*120;
+  drugs.push({angle,r,speed:(Math.random()-0.5)*0.02,bound:false,bindAngle:0,bindTimer:0,x:0,y:0});
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  const cx=260,cy=200;
+  // Albumin
+  ctx.beginPath();ctx.arc(cx,cy,70,0,Math.PI*2);
+  ctx.fillStyle='rgba(52,152,219,0.3)';ctx.fill();
+  ctx.strokeStyle='#3498DB';ctx.lineWidth=3;ctx.stroke();
+  ctx.fillStyle='#3498DB';ctx.font='bold 13px Arial';ctx.textAlign='center';
+  ctx.fillText('Albumin',cx,cy-5);ctx.font='10px Arial';ctx.fillText('(Plasma Protein)',cx,cy+12);
+
+  // Binding sites
+  for(let i=0;i<6;i++){
+    const a=i*(Math.PI/3)+t*0.005;
+    const bx=cx+Math.cos(a)*70,by=cy+Math.sin(a)*70;
+    ctx.beginPath();ctx.arc(bx,by,6,0,Math.PI*2);
+    ctx.fillStyle='rgba(52,152,219,0.5)';ctx.fill();
+  }
+
+  let boundCount=0,freeCount=0;
+  drugs.forEach(d=>{
+    if(!d.bound){
+      d.angle+=d.speed;
+      d.x=cx+Math.cos(d.angle)*d.r;d.y=cy+Math.sin(d.angle)*d.r;
+      // Randomly bind if close
+      if(d.r<100 && Math.random()<0.005){d.bound=true;d.bindAngle=d.angle;d.bindTimer=120+Math.random()*80;}
+      freeCount++;
+    } else {
+      d.bindTimer--;d.x=cx+Math.cos(d.bindAngle)*72;d.y=cy+Math.sin(d.bindAngle)*72;
+      if(d.bindTimer<=0){d.bound=false;d.r=90+Math.random()*100;}
+      boundCount++;
+    }
+    ctx.beginPath();ctx.arc(d.x,d.y,5,0,Math.PI*2);
+    ctx.fillStyle=d.bound?'#E74C3C':'#F39C12';ctx.fill();
+  });
+
+  // Legend + stats
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(430,80,260,200);
+  ctx.fillStyle='#F39C12';ctx.beginPath();ctx.arc(450,110,6,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='white';ctx.font='11px Arial';ctx.textAlign='left';ctx.fillText('Free drug (active)',465,114);
+  ctx.fillStyle='#E74C3C';ctx.beginPath();ctx.arc(450,135,6,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='white';ctx.fillText('Bound drug (inactive)',465,139);
+  ctx.fillStyle='#AED6F1';ctx.font='13px Arial';
+  ctx.fillText(`Free: ${freeCount} molecules`,445,175);
+  ctx.fillText(`Bound: ${boundCount} molecules`,445,195);
+  const pct=Math.round(boundCount/(boundCount+freeCount)*100);
+  ctx.fillStyle='#2ECC71';ctx.font='bold 14px Arial';
+  ctx.fillText(`Binding: ~${pct}%`,445,225);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('fu = '+((100-pct)/100).toFixed(2)+' (free fraction)',445,245);
+
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,230,42);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('Plasma Protein Binding',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Free drug = pharmacologically active',18,44);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>GIT Anatomy and Drug Absorption – Biopharmaceutics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>GIT Anatomy and Drug Absorption</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>GIT Anatomy and Drug Absorption</h2><p>The gastrointestinal tract is the most common route for drug administration. Understanding its anatomy is essential to predicting drug absorption.</p><h3>Stomach (pH 1.5–3.5)</h3><p>Weak acids (aspirin, ibuprofen) are un-ionised at low pH and can be absorbed here. However, limited surface area means most absorption occurs downstream. Delayed gastric emptying slows drug delivery to small intestine.</p><h3>Small Intestine (pH 6–7.4)</h3><p>The primary absorption site due to its enormous surface area (~200 m² with villi and microvilli). Drugs cross the enterocyte membrane by passive diffusion, active transport, or pinocytosis. The enterocytes also contain CYP3A4 — contributing to intestinal first-pass metabolism.</p><h3>Portal Circulation and Hepatic First-Pass Effect</h3><p>Absorbed drug enters the portal vein → liver. Hepatic enzymes (CYP450) metabolise a fraction before it reaches systemic circulation. High extraction ratio drugs (e.g., morphine, propranolol) have very low oral bioavailability due to extensive first-pass effect.</p><h3>Colon and Rectum</h3><p>Limited absorption surface. Suppositories administered rectally partially bypass hepatic first-pass (lower rectal veins drain to systemic, upper to portal).</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — GIT Anatomy and Drug Absorption</h2><div class="question"><p>1. The primary site of drug absorption after oral administration is:</p><div class="opts"><label onclick="cho(this,false)">A. Stomach</label><label onclick="cho(this,true)" data-c>B. Small intestine</label><label onclick="cho(this,false)">C. Colon</label><label onclick="cho(this,false)">D. Rectum</label></div></div><div class="question"><p>2. First-pass effect refers to:</p><div class="opts"><label onclick="cho(this,false)">A. Drug degradation in stomach</label><label onclick="cho(this,false)">B. Drug metabolism by gut bacteria</label><label onclick="cho(this,true)" data-c>C. Hepatic metabolism before systemic circulation</label><label onclick="cho(this,false)">D. Renal elimination of absorbed drug</label></div></div><div class="question"><p>3. Which type of drug is best absorbed in the stomach?</p><div class="opts"><label onclick="cho(this,false)">A. Weak base</label><label onclick="cho(this,false)">B. Strong acid</label><label onclick="cho(this,true)" data-c>C. Weak acid</label><label onclick="cho(this,false)">D. Quaternary ammonium compound</label></div></div><div class="question"><p>4. P-glycoprotein in intestinal enterocytes:</p><div class="opts"><label onclick="cho(this,false)">A. Enhances drug absorption</label><label onclick="cho(this,true)" data-c>B. Effluxes drug back into gut lumen reducing absorption</label><label onclick="cho(this,false)">C. Metabolises drugs</label><label onclick="cho(this,false)">D. Transports drugs into portal blood</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics and Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;
+let t=0,running=true;
+
+// Draw GI tract cross-section with drug absorption sites
+let particles=[];
+for(let i=0;i<20;i++) particles.push({x:80+Math.random()*30,y:60+Math.random()*260,vx:0.4+Math.random()*0.3,vy:(Math.random()-0.5)*0.2,absorbed:false,t:Math.random()*200});
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  // GI tube
+  const segments=[
+    {y:40,h:60,label:'Stomach',col:'#E74C3C',note:'pH 1.5–3.5\nWeak acids absorbed'},
+    {y:120,h:80,label:'Small Intestine',col:'#E67E22',note:'pH 6–7.4\nMain absorption site'},
+    {y:220,h:60,label:'Colon',col:'#8E44AD',note:'pH 7–8\nLimited absorption'},
+    {y:300,h:60,label:'Rectum',col:'#C0392B',note:'Suppositories\nAvoids 1st pass'},
+  ];
+  segments.forEach(s=>{
+    ctx.fillStyle=s.col+'33';ctx.fillRect(40,s.y,160,s.h);
+    ctx.strokeStyle=s.col;ctx.lineWidth=2;ctx.strokeRect(40,s.y,160,s.h);
+    ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='left';ctx.fillText(s.label,50,s.y+16);
+    ctx.fillStyle='#AED6F1';ctx.font='8px Arial';
+    s.note.split('\n').forEach((ln,i)=>ctx.fillText(ln,50,s.y+28+i*11));
+  });
+  // Blood vessel
+  ctx.fillStyle='rgba(192,57,43,0.3)';ctx.fillRect(260,40,80,320);
+  ctx.strokeStyle='#C0392B';ctx.lineWidth=2;ctx.strokeRect(260,40,80,320);
+  ctx.fillStyle='#E74C3C';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('Portal',300,180);ctx.fillText('Blood',300,193);
+  // Liver box
+  ctx.fillStyle='rgba(39,174,96,0.3)';ctx.fillRect(390,100,120,80);
+  ctx.strokeStyle='#27AE60';ctx.lineWidth=2;ctx.strokeRect(390,100,120,80);
+  ctx.fillStyle='#2ECC71';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('Liver',450,135);ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
+  ctx.fillText('First-pass metabolism',450,150);ctx.fillText('CYP450 enzymes',450,163);
+  // Systemic circulation
+  ctx.fillStyle='rgba(41,128,185,0.3)';ctx.fillRect(390,220,280,80);
+  ctx.strokeStyle='#2980B9';ctx.lineWidth=2;ctx.strokeRect(390,220,280,80);
+  ctx.fillStyle='#3498DB';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('Systemic Circulation',530,255);ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
+  ctx.fillText('→ Target organs',530,270);
+  // Arrows
+  ctx.strokeStyle='#F39C12';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(200,200);ctx.lineTo(260,200);ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle='#27AE60';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(340,140);ctx.lineTo(390,140);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(450,180);ctx.lineTo(450,220);ctx.stroke();
+  // Particles moving through GIT
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy*0.5;
+    if(p.x>200&&!p.absorbed){
+      p.absorbed=true;
+      p.tx=290;p.ty=p.y;
+    }
+    if(p.absorbed){p.x+=(p.tx-p.x)*0.08;p.y+=(p.ty-p.y)*0.08;}
+    if(p.x>W)p.x=70;
+    ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);
+    ctx.fillStyle=p.absorbed?'#F39C12':'#E74C3C';ctx.globalAlpha=0.8;ctx.fill();ctx.globalAlpha=1;
+  });
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,260,44);
+  ctx.fillStyle='white';ctx.font='bold 13px Arial';ctx.textAlign='left';ctx.fillText('GIT Anatomy & Drug Absorption',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Oral route → Portal blood → Liver → Systemic',18,46);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+
+</script></body></html>

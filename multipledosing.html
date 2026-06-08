@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Multiple Dosing</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Multiple Dosing — Drug Accumulation to Steady State</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Multiple Dosing and Steady State</h2><p>When a drug is administered repeatedly at fixed intervals (τ), it accumulates in the body until the rate of elimination equals the rate of input. This is steady state (Css).</p><h3>Key Equations</h3><p>Css,avg = F × D / (CL × τ). Time to reach 90% steady state ≈ 3.3 × t½. Accumulation factor R = 1 / (1 − e^(−Ke·τ)).</p><h3>Clinical Significance</h3><p>Drugs with long t½ take long to reach Css — loading dose needed. Drugs with short t½ reach Css quickly. Css,min (trough) must remain above MEC. Css,max (peak) must remain below MTC. Narrow therapeutic index drugs (digoxin, phenytoin, lithium) require TDM.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Multiple Dosing</h2><div class="question"><p>1. At steady state, the rate of drug elimination equals:</p><div class="opts"><label onclick="cho(this,false)">A. Zero</label>
+<label onclick="cho(this,true)" data-c>B. Rate of drug administration</label>
+<label onclick="cho(this,false)">C. Rate of distribution</label>
+<label onclick="cho(this,false)">D. Rate of protein binding</label>
+</div></div>
+<div class="question"><p>2. Time to reach 90% of steady state is approximately:</p><div class="opts"><label onclick="cho(this,false)">A. 1 × t½</label>
+<label onclick="cho(this,false)">B. 2 × t½</label>
+<label onclick="cho(this,true)" data-c>C. 3.3 × t½</label>
+<label onclick="cho(this,false)">D. 5 × t½</label>
+</div></div>
+<div class="question"><p>3. A loading dose is given to:</p><div class="opts"><label onclick="cho(this,false)">A. Prevent toxicity</label>
+<label onclick="cho(this,true)" data-c>B. Rapidly achieve therapeutic Css without waiting for accumulation</label>
+<label onclick="cho(this,false)">C. Reduce side effects</label>
+<label onclick="cho(this,false)">D. Bypass first pass effect</label>
+</div></div>
+</div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  const ox=70,oy=40,gw=600,gh=270;
+  const ke=0.2,tau=6,D=100,Vd=20,F=1;
+  const nDoses=10;
+  const prog=Math.min(t/600,1);
+  const maxT=tau*nDoses,maxCp=40;
+
+  function cpAfterDose(time,doseNum){
+    let cp=0;
+    for(let d=0;d<=doseNum;d++){
+      const dt=time-d*tau;
+      if(dt>=0)cp+=(F*D/Vd)*Math.exp(-ke*dt);
+    }
+    return cp;
+  }
+
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+gh);ctx.lineTo(ox+gw,oy+gh);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='11px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (h)',ox+gw/2,oy+gh+22);
+  ctx.save();ctx.translate(ox-32,oy+gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Plasma Concentration (mg/L)',0,0);ctx.restore();
+
+  function tx(time){return ox+time/maxT*gw;}
+  function cy(cp){return oy+gh*(1-Math.min(cp,maxCp)/maxCp);}
+
+  // Css line
+  const css=F*D/(ke*Vd*tau);
+  ctx.strokeStyle='rgba(231,76,60,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(ox,cy(css));ctx.lineTo(ox+gw,cy(css));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#E74C3C';ctx.font='10px Arial';ctx.textAlign='left';
+  ctx.fillText('Css,avg = '+css.toFixed(1)+' mg/L',ox+gw-130,cy(css)-6);
+
+  // Dose markers
+  for(let d=0;d<nDoses;d++){
+    const doseT=d*tau;
+    if(doseT/maxT>prog) break;
+    ctx.strokeStyle='rgba(241,196,15,0.6)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(tx(doseT),oy+gh);ctx.lineTo(tx(doseT),oy+gh-20);ctx.stroke();
+    ctx.fillStyle='#F1C40F';ctx.font='8px Arial';ctx.textAlign='center';
+    ctx.fillText('💊',tx(doseT),oy+gh+14);
+  }
+
+  // Draw curve
+  ctx.strokeStyle='#2ECC71';ctx.lineWidth=2.5;ctx.beginPath();
+  let first=true;
+  for(let ti=0;ti<=maxT*prog;ti+=0.1){
+    const doseNum=Math.min(Math.floor(ti/tau),nDoses-1);
+    const cp=cpAfterDose(ti,doseNum);
+    const px=tx(ti),py=cy(cp);
+    if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+  }ctx.stroke();
+
+  // Css band
+  const cssMax=css*1.25,cssMin=css*0.75;
+  ctx.fillStyle='rgba(231,76,60,0.08)';
+  ctx.fillRect(ox,cy(cssMax),gw,cy(cssMin)-cy(cssMax));
+
+  // MEC/MTC
+  ctx.strokeStyle='rgba(46,204,113,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(ox,cy(10));ctx.lineTo(ox+gw,cy(10));ctx.stroke();
+  ctx.fillStyle='#2ECC71';ctx.font='9px Arial';ctx.textAlign='right';ctx.fillText('MEC',ox+gw,cy(10)-3);
+  ctx.setLineDash([]);
+
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,230,38);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('Multiple Dosing Accumulation',18,27);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Css reached after ~3.3 × t½',18,42);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>BCS and Dissolution</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+h1{color:#fff;font-size:1.1rem;padding:10px;text-align:center}.tabs{display:flex;gap:6px;margin-bottom:8px}
+.tab{padding:6px 18px;border-radius:16px;cursor:pointer;font-size:.85rem;border:none;background:#16213e;color:#aaa}.tab.active{background:#e94560;color:#fff}
+canvas{border-radius:8px}.info{position:absolute;top:60px;left:18px;background:rgba(0,0,0,0.65);color:#fff;font-size:.75rem;padding:8px 10px;border-radius:6px;max-width:200px;line-height:1.5}.wrap{position:relative}
+#mcq{display:none;width:720px;padding:16px;color:#fff}.q{margin-bottom:14px;font-size:.9rem}.opt{cursor:pointer;padding:6px 10px;margin:3px 0;border-radius:4px;background:#16213e}.opt:hover{background:#0f3460}
+footer{color:#555;font-size:.72rem;margin:8px 0}
+</style></head><body>
+<h1>BCS Classification and Dissolution Rate-Limiting Step</h1>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('anim')">Animation</button>
+  <button class="tab" onclick="showTab('theory')">Theory</button>
+  <button class="tab" onclick="showTab('mcq')">MCQs</button>
+</div>
+<div class="wrap">
+  <canvas id="c" width="720" height="380"></canvas>
+  <div class="info">BCS Class I: Good solubility + permeability → dissolution fast, absorption complete<br><br>Class II: Poor solubility → dissolution rate-limiting</div>
+</div>
+<div id="mcq" style="display:none;width:720px;padding:16px;color:#fff">
+  <div class="q"><b>Q1.</b> For BCS Class II drugs, the rate-limiting step for absorption is:
+    <div class="opt" onclick="cho(this,false)">a) Membrane permeation</div>
+    <div class="opt" data-c onclick="cho(this,true)">b) Dissolution in GI fluids</div>
+    <div class="opt" onclick="cho(this,false)">c) First-pass metabolism</div>
+    <div class="opt" onclick="cho(this,false)">d) Gastric emptying</div>
+  </div>
+  <div class="q"><b>Q2.</b> A BCS Class I drug can be granted a dissolution biowaiver because:
+    <div class="opt" onclick="cho(this,false)">a) It dissolves slowly but absorbs fast</div>
+    <div class="opt" data-c onclick="cho(this,true)">b) Rapid dissolution ensures in vitro-in vivo correlation</div>
+    <div class="opt" onclick="cho(this,false)">c) It bypasses first-pass effect</div>
+    <div class="opt" onclick="cho(this,false)">d) It is only available as IV form</div>
+  </div>
+  <div class="q"><b>Q3.</b> Ibuprofen is a BCS Class II drug. What formulation strategy improves its BA?
+    <div class="opt" onclick="cho(this,false)">a) Granulation alone</div>
+    <div class="opt" onclick="cho(this,false)">b) Film coating for taste masking</div>
+    <div class="opt" data-c onclick="cho(this,true)">c) Particle size reduction or salt form to enhance dissolution</div>
+    <div class="opt" onclick="cho(this,false)">d) Enteric coating to delay release</div>
+  </div>
+</div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+function showTab(t){document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['anim','theory','mcq'][i]===t));document.getElementById('c').style.display=t==='anim'?'block':'none';document.getElementById('info').style.display=t==='anim'?'block':'none';document.getElementById('mcq').style.display=t==='mcq'?'block':'none';}
+function cho(el,ok){el.style.background=ok?'#1a6b3a':'#6b1a1a';el.parentNode.querySelectorAll('[data-c]').forEach(e=>e.style.background='#1a6b3a');}
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let t=0;
+
+const classes=[
+  {id:'I',  sol:'High', per:'High', col:'#27ae60', drug:'Metformin\nParacetamol', limit:'Neither',    ba:'Excellent'},
+  {id:'II', sol:'Low',  per:'High', col:'#e67e22', drug:'Ibuprofen\nGriseofulvin', limit:'Dissolution', ba:'Variable'},
+  {id:'III',sol:'High', per:'Low',  col:'#3498db', drug:'Atenolol\nRanitidine',  limit:'Permeation',  ba:'Moderate'},
+  {id:'IV', sol:'Low',  per:'Low',  col:'#e74c3c', drug:'Furosemide\nRifampicin', limit:'Both',        ba:'Poor'},
+];
+
+function frame(){
+  cx.clearRect(0,0,720,380);
+  cx.fillStyle='#0f0f23'; cx.fillRect(0,0,720,380);
+
+  // Title
+  cx.fillStyle='#fff'; cx.font='bold 13px Arial'; cx.textAlign='center';
+  cx.fillText('BCS 2×2 Grid — Dissolution & Permeability',360,22);
+
+  // Grid
+  const gx=100,gy=45,gw=520,gh=280;
+  const midX=gx+gw/2,midY=gy+gh/2;
+
+  // Quadrants
+  classes.forEach((c,i)=>{
+    const qx=i%2===0?gx:midX;
+    const qy=i<2?gy:midY;
+    const qw=gw/2,qh=gh/2;
+    cx.fillStyle=c.col+'33';
+    cx.fillRect(qx,qy,qw,qh);
+    cx.strokeStyle=c.col+'99'; cx.lineWidth=1.5;
+    cx.strokeRect(qx,qy,qw,qh);
+
+    // Class label
+    cx.fillStyle=c.col; cx.font='bold 22px Arial'; cx.textAlign='left';
+    cx.fillText('Class '+c.id,qx+10,qy+28);
+
+    cx.fillStyle='#ddd'; cx.font='11px Arial';
+    cx.fillText('Sol: '+c.sol+'  Per: '+c.per,qx+10,qy+46);
+    cx.fillStyle='#aaa'; cx.font='10px Arial';
+    c.drug.split('\n').forEach((d,di)=>cx.fillText(d,qx+10,qy+62+di*14));
+    cx.fillStyle='#f1c40f'; cx.font='bold 11px Arial';
+    cx.fillText('Limit: '+c.limit,qx+10,qy+94);
+    cx.fillStyle=c.col; cx.font='11px Arial';
+    cx.fillText('BA: '+c.ba,qx+10,qy+110);
+  });
+
+  // Axis labels
+  cx.fillStyle='#aaa'; cx.font='bold 12px Arial'; cx.textAlign='center';
+  cx.fillText('Low Permeability',gx+gw*0.25,gy+gh+22);
+  cx.fillText('High Permeability',gx+gw*0.75,gy+gh+22);
+  cx.save(); cx.translate(gx-18,gy+gh/2); cx.rotate(-Math.PI/2);
+  cx.fillText('→ Solubility →',0,0); cx.restore();
+  cx.save(); cx.translate(gx-38,gy+gh/2); cx.rotate(-Math.PI/2);
+  cx.fillStyle='#aaa'; cx.font='11px Arial';
+  cx.fillText('Low                        High',0,0); cx.restore();
+
+  // Animated pulsing highlight of current class
+  const highlight=Math.floor(t/90)%4;
+  const c=classes[highlight];
+  const qx=highlight%2===0?gx:midX;
+  const qy=highlight<2?gy:midY;
+  const pulse=0.5+0.5*Math.sin(t*0.1);
+  cx.strokeStyle=c.col; cx.lineWidth=3*pulse+1;
+  cx.strokeRect(qx+2,qy+2,gw/2-4,gh/2-4);
+
+  // Bottom bar: dissolution profile hint
+  cx.fillStyle='#1a1a2e'; cx.fillRect(0,340,720,40);
+  cx.fillStyle='#aaa'; cx.font='11px Arial'; cx.textAlign='center';
+  const msgs=[
+    'Class I: Rapid dissolution → absorption complete → biowaiver eligible',
+    'Class II: Dissolution rate-limiting → formulation improvement needed',
+    'Class III: Membrane barrier → permeation enhancers may help',
+    'Class IV: Both barriers → poor BA even with formulation work'
+  ];
+  cx.fillText(msgs[highlight],360,360);
+
+  t++; requestAnimationFrame(frame);
+}
+frame();
+</script></body></html>

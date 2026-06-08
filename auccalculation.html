@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>AUC Calculation — Linear and Log-Linear Trapezoidal – Biopharmaceutics & Pharmacokinetics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>AUC Calculation — Linear and Log-Linear Trapezoidal</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>AUC Calculation — Trapezoidal Methods</h2><p>Area Under the plasma Concentration-time Curve (AUC) represents total drug exposure. Calculated from observed data using the trapezoidal rule — no compartmental model assumed.</p><h3>Linear Trapezoidal Rule</h3><p>AUC(t1→t2) = ½ × (C1 + C2) × (t2 - t1). Best used when concentration is rising (absorption phase). Overestimates AUC during steep decline.</p><h3>Log-Linear Trapezoidal Rule</h3><p>AUC(t1→t2) = (C1 - C2) / ln(C1/C2) × (t2 - t1). Best used when concentration is falling (post-Cmax). More accurate during monoexponential decline. Linear-log combination is the default in modern NCA software (WinNonlin, Phoenix).</p><h3>AUC Extrapolation to Infinity</h3><p>AUC(0→∞) = AUC(0→t_last) + C_last/λz. λz is the terminal elimination slope from semi-log regression of last 3 or more data points. The tail must represent ≤20% of total AUC for reliable extrapolation.</p><h3>Clinical Use of AUC</h3><p>Bioavailability: F = AUC(oral)/AUC(IV). Clearance: CL = Dose/AUC(IV). Bioequivalence: AUC ratio must be within 80–125%.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — AUC Calculation</h2><div class="question"><p>1. The log-linear trapezoidal method is preferred over linear for:</p><div class="opts"><label onclick="cho(this,false)">A. Rising (absorption) phase</label><label onclick="cho(this,true)" data-c>B. Falling (elimination) phase where concentrations decline steeply</label><label onclick="cho(this,false)">C. Both phases equally</label><label onclick="cho(this,false)">D. Only at steady state</label></div></div><div class="question"><p>2. AUC from t_last to infinity is calculated as:</p><div class="opts"><label onclick="cho(this,false)">A. C_last × t_last</label><label onclick="cho(this,true)" data-c>B. C_last / λz (terminal rate constant)</label><label onclick="cho(this,false)">C. AUC(0→t_last) × 2</label><label onclick="cho(this,false)">D. 0.693/Ke</label></div></div><div class="question"><p>3. If AUC(IV, 100mg) = 50 mg·h/L and AUC(oral, 100mg) = 35 mg·h/L, absolute F =</p><div class="opts"><label onclick="cho(this,false)">A. 100%</label><label onclick="cho(this,false)">B. 143%</label><label onclick="cho(this,true)" data-c>C. 70%</label><label onclick="cho(this,false)">D. 50%</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Two methods side by side: linear trapezoidal (left), log-linear (right)
+// Animate: sweep from left to right highlighting each trapezoid
+
+const data=[[0,18],[0.5,15],[1,12],[2,9],[3,7],[4,5.5],[6,3.5],[8,2.2],[12,0.9],[24,0.15]];
+const TMAX=24,CPMAX=20;
+
+// Linear trap
+function linTrap(t1,c1,t2,c2){return ((c1+c2)/2)*(t2-t1);}
+// Log-linear trap
+function logTrap(t1,c1,t2,c2){return (c1-c2)/Math.log(c1/c2)*(t2-t1);}
+
+// Calculate cumulative AUC
+let aucLin=0, aucLog=0;
+for(let i=0;i<data.length-1;i++){
+  const [t1,c1]=data[i],[t2,c2]=data[i+1];
+  aucLin+=linTrap(t1,c1,t2,c2);
+  aucLog+=logTrap(t1,c1,t2,c2);
+}
+// Add tail
+aucLin+=data[data.length-1][1]/0.12;
+aucLog+=data[data.length-1][1]/0.12;
+
+// Left panel: linear trap
+const LX=40,LY=35,LW=300,LH=270;
+function lX(tm){return LX+tm*(LW/TMAX);}
+function lY(cp){return LY+LH-cp*(LH/CPMAX);}
+
+// Right panel: log-linear trap
+const RX=390,RY=35,RW=300,RH=270;
+function rX(tm){return RX+tm*(RW/TMAX);}
+function rY(logcp){return RY+RH-(logcp-(-1.2))*(RH/(Math.log10(CPMAX)+1.2));}
+
+function drawPanel(ox,oy,ow,oh,toXf,toYf,logScale,activeIdx){
+  // Axes
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ox,oy+oh);ctx.lineTo(ox+ow,oy+oh);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,oy+oh);ctx.lineTo(ox,oy);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (h)',ox+ow/2,oy+oh+18);
+  ctx.save();ctx.translate(ox-18,oy+oh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText(logScale?'log Cp':'Cp (mg/L)',0,0);ctx.restore();
+
+  // Shade active trapezoid
+  if(activeIdx>=0 && activeIdx<data.length-1){
+    const [t1,c1]=data[activeIdx],[t2,c2]=data[activeIdx+1];
+    const y1=logScale?toYf(Math.log10(c1)):toYf(c1);
+    const y2=logScale?toYf(Math.log10(c2)):toYf(c2);
+    ctx.fillStyle='rgba(241,196,15,0.25)';
+    ctx.beginPath();
+    ctx.moveTo(toXf(t1),oy+oh);
+    ctx.lineTo(toXf(t1),y1);
+    ctx.lineTo(toXf(t2),y2);
+    ctx.lineTo(toXf(t2),oy+oh);
+    ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#F1C40F';ctx.lineWidth=1.5;ctx.stroke();
+    // Area label
+    const area=logScale?logTrap(t1,c1,t2,c2):linTrap(t1,c1,t2,c2);
+    ctx.fillStyle='#F1C40F';ctx.font='9px Arial';ctx.textAlign='center';
+    ctx.fillText(Math.round(area*10)/10+' mg·h/L',(toXf(t1)+toXf(t2))/2,oy+oh-8);
+  }
+
+  // Draw all trapezoids (shaded)
+  for(let i=0;i<data.length-1;i++){
+    const [t1,c1]=data[i],[t2,c2]=data[i+1];
+    const y1=logScale?toYf(Math.log10(c1)):toYf(c1);
+    const y2=logScale?toYf(Math.log10(c2)):toYf(c2);
+    ctx.fillStyle=`rgba(52,152,219,${i<activeIdx?0.15:0.06})`;
+    ctx.beginPath();ctx.moveTo(toXf(t1),oy+oh);ctx.lineTo(toXf(t1),y1);
+    ctx.lineTo(toXf(t2),y2);ctx.lineTo(toXf(t2),oy+oh);ctx.closePath();ctx.fill();
+  }
+
+  // Curve
+  ctx.beginPath();ctx.strokeStyle='#3498DB';ctx.lineWidth=2;
+  data.forEach(([tm,cp],i)=>{
+    const y=logScale?toYf(Math.log10(cp)):toYf(cp);
+    if(i===0) ctx.moveTo(toXf(tm),y); else ctx.lineTo(toXf(tm),y);
+  });
+  ctx.stroke();
+
+  // Data points
+  data.forEach(([tm,cp])=>{
+    const y=logScale?toYf(Math.log10(cp)):toYf(cp);
+    ctx.beginPath();ctx.arc(toXf(tm),y,4,0,Math.PI*2);
+    ctx.fillStyle='#3498DB';ctx.fill();
+  });
+
+  // Tick marks
+  [0,6,12,18,24].forEach(tm=>{ctx.fillStyle='#555';ctx.font='8px Arial';ctx.textAlign='center';ctx.fillText(tm,toXf(tm),oy+oh+10);});
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  const activeIdx=Math.floor((t*0.04)%(data.length-1));
+
+  // Titles
+  ctx.fillStyle='#4A90D9';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('Linear Trapezoidal',LX+LW/2,LY-6);
+  ctx.fillText('Log-Linear Trapezoidal',RX+RW/2,RY-6);
+
+  drawPanel(LX,LY,LW,LH,lX,lY,false,activeIdx);
+  drawPanel(RX,RY,RW,RH,rX,rY,true,activeIdx);
+
+  // Y axis labels for log panel
+  [0.2,0.5,1,2,5,10,20].forEach(c=>{
+    if(Math.log10(c)>=-1.2){
+      ctx.fillStyle='#555';ctx.font='7px Arial';ctx.textAlign='right';
+      ctx.fillText(c,RX-3,rY(Math.log10(c))+3);
+    }
+  });
+
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,325,700,50);
+  ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.textAlign='left';
+  ctx.fillText('Linear trap: ½(C1+C2)×(t2-t1)  |  Log-linear trap: (C1-C2)/ln(C1/C2)×(t2-t1)',18,343);
+  ctx.fillStyle='#F39C12';ctx.font='10px Arial';
+  ctx.fillText('AUC(linear) ≈ '+Math.round(aucLin)+' mg·h/L',18,360);
+  ctx.fillStyle='#2ECC71';ctx.fillText('AUC(log-linear) ≈ '+Math.round(aucLog)+' mg·h/L',18,374);
+  ctx.fillStyle='#AED6F1';ctx.fillText('Log-linear preferred when concentration is falling steeply (reduces overestimation)',350,360);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

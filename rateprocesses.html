@@ -1,0 +1,142 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Zero & First Order Kinetics – Biopharmaceutics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Zero Order & First Order Rate Processes</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory">
+<h2>Rate Processes in Pharmacokinetics</h2>
+<p>The rate at which a drug is absorbed, distributed, metabolised, or eliminated follows mathematical rate laws. The two most important are zero order and first order.</p>
+<h3>Zero Order Kinetics</h3>
+<p>Drug amount decreases at a CONSTANT RATE regardless of concentration. Rate = k₀ (constant). Graph: straight line decline. Example: alcohol elimination, some controlled-release formulations, IV infusion at fixed rate. Equation: C = C₀ − k₀t</p>
+<h3>First Order Kinetics</h3>
+<p>Drug amount decreases at a rate PROPORTIONAL to the amount present. Rate = k·C. As drug level falls, the rate of elimination also falls. Graph: curved decline (exponential). Semi-log plot: straight line. Example: most drug absorptions and eliminations. Equation: C = C₀·e^(−kt)</p>
+<h3>Half-life (t½)</h3>
+<p>First order: t½ = 0.693/k — CONSTANT regardless of dose. Zero order: t½ = C₀/2k₀ — DEPENDS on initial concentration. This distinction is clinically critical.</p>
+</div></div>
+<div class="panel" id="mcq"><div class="mcq">
+<h2>MCQs — Rate Processes</h2>
+<div class="question"><p>1. In first order kinetics, the half-life is:</p>
+<div class="opts"><label onclick="cho(this,false)">A. Proportional to initial concentration</label><label onclick="cho(this,true)" data-c>B. Constant, independent of dose</label><label onclick="cho(this,false)">C. Inversely proportional to dose</label><label onclick="cho(this,false)">D. Variable with time</label></div></div>
+<div class="question"><p>2. A semi-log plot of plasma concentration vs time gives a straight line for:</p>
+<div class="opts"><label onclick="cho(this,false)">A. Zero order kinetics</label><label onclick="cho(this,true)" data-c>B. First order kinetics</label><label onclick="cho(this,false)">C. Both zero and first order</label><label onclick="cho(this,false)">D. Michaelis-Menten kinetics only</label></div></div>
+<div class="question"><p>3. Alcohol elimination follows which type of kinetics at high concentrations?</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. Zero order</label><label onclick="cho(this,false)">B. First order</label><label onclick="cho(this,false)">C. Second order</label><label onclick="cho(this,false)">D. Mixed order always</label></div></div>
+<div class="question"><p>4. The equation C = C₀ · e^(−kt) represents:</p>
+<div class="opts"><label onclick="cho(this,false)">A. Zero order decline</label><label onclick="cho(this,true)" data-c>B. First order exponential decline</label><label onclick="cho(this,false)">C. Michaelis-Menten saturation</label><label onclick="cho(this,false)">D. Linear IV infusion</label></div></div>
+</div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+const gx=60,gy=30,gw=280,gh=280; // left graph (linear)
+const gx2=400,gy2=30,gw2=280,gh2=280; // right graph (semi-log)
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  const phase=Math.min(t/300,1); // 0→1 over 300 frames
+
+  // === LEFT GRAPH: Linear scale ===
+  ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(gx,gy,gw,gh);
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1;ctx.strokeRect(gx,gy,gw,gh);
+  // Axes labels
+  ctx.fillStyle='#AED6F1';ctx.font='11px Arial';ctx.textAlign='center';
+  ctx.fillText('Time',gx+gw/2,gy+gh+20);
+  ctx.save();ctx.translate(gx-30,gy+gh/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Concentration',0,0);ctx.restore();
+  ctx.fillText('Linear Scale',gx+gw/2,gy-12);
+
+  // Zero order line (straight)
+  ctx.strokeStyle='#F39C12';ctx.lineWidth=2.5;ctx.beginPath();
+  const zeroSlope=gh*0.85;
+  ctx.moveTo(gx,gy+gh*0.1);
+  const zeroEnd=Math.min(phase,0.95);
+  ctx.lineTo(gx+gw*zeroEnd,gy+gh*0.1+zeroSlope*zeroEnd);
+  ctx.stroke();
+
+  // First order curve (exponential decay)
+  ctx.strokeStyle='#2ECC71';ctx.lineWidth=2.5;ctx.beginPath();
+  ctx.moveTo(gx,gy+gh*0.1);
+  for(let i=1;i<=gw*phase;i++){
+    const x=gx+i,frac=i/gw;
+    const y=gy+gh*0.1+gh*0.85*(1-Math.exp(-4*frac));
+    ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Labels
+  ctx.font='10px Arial';ctx.textAlign='left';
+  ctx.fillStyle='#F39C12';ctx.fillText('Zero Order (linear)',gx+5,gy+20);
+  ctx.fillStyle='#2ECC71';ctx.fillText('First Order (curved)',gx+5,gy+35);
+
+  // === RIGHT GRAPH: Semi-log scale ===
+  ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(gx2,gy2,gw2,gh2);
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1;ctx.strokeRect(gx2,gy2,gw2,gh2);
+  ctx.fillStyle='#AED6F1';ctx.font='11px Arial';ctx.textAlign='center';
+  ctx.fillText('Time',gx2+gw2/2,gy2+gh2+20);
+  ctx.save();ctx.translate(gx2-30,gy2+gh2/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('log Concentration',0,0);ctx.restore();
+  ctx.fillText('Semi-Log Scale',gx2+gw2/2,gy2-12);
+
+  // Log grid lines
+  ctx.strokeStyle='rgba(74,144,217,0.2)';ctx.lineWidth=1;
+  [0.25,0.5,0.75].forEach(f=>{
+    ctx.beginPath();ctx.moveTo(gx2,gy2+gh2*f);ctx.lineTo(gx2+gw2,gy2+gh2*f);ctx.stroke();
+  });
+
+  // Zero order — curves downward on semi-log
+  ctx.strokeStyle='#F39C12';ctx.lineWidth=2.5;ctx.beginPath();
+  ctx.moveTo(gx2,gy2+gh2*0.05);
+  for(let i=1;i<=gw2*phase;i++){
+    const frac=i/gw2;
+    const C=1-0.9*frac; // linear decline
+    if(C>0.01){
+      const logY=gy2+gh2*(1-Math.log10(C*100)/2);
+      if(i===1)ctx.moveTo(gx2+i,logY);else ctx.lineTo(gx2+i,logY);
+    }
+  }
+  ctx.stroke();
+
+  // First order — straight line on semi-log
+  ctx.strokeStyle='#2ECC71';ctx.lineWidth=2.5;ctx.beginPath();
+  ctx.moveTo(gx2,gy2+gh2*0.05);
+  const foEnd=gx2+gw2*phase;
+  ctx.lineTo(foEnd,gy2+gh2*0.05+gh2*0.85*phase);
+  ctx.stroke();
+
+  ctx.font='10px Arial';ctx.textAlign='left';
+  ctx.fillStyle='#F39C12';ctx.fillText('Zero Order (curved)',gx2+5,gy2+20);
+  ctx.fillStyle='#2ECC71';ctx.fillText('First Order (straight)',gx2+5,gy2+35);
+
+  // Animated dot on each curve
+  if(phase<1){
+    const frac=phase;
+    // Zero order dot left graph
+    ctx.beginPath();ctx.arc(gx+gw*frac,gy+gh*0.1+gh*0.85*frac,5,0,Math.PI*2);
+    ctx.fillStyle='#F39C12';ctx.fill();
+    // First order dot left graph
+    ctx.beginPath();ctx.arc(gx+gw*frac,gy+gh*0.1+gh*0.85*(1-Math.exp(-4*frac)),5,0,Math.PI*2);
+    ctx.fillStyle='#2ECC71';ctx.fill();
+  }
+
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,240,50);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('Zero Order vs First Order',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Rate process comparison — linear & semi-log',18,46);
+
+  // Key equations bottom
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(10,355,700,20);
+  ctx.fillStyle='#F39C12';ctx.font='10px Arial';ctx.textAlign='left';
+  ctx.fillText('Zero: C = C₀ − k₀t',20,368);
+  ctx.fillStyle='#2ECC71';ctx.textAlign='center';
+  ctx.fillText('First: C = C₀ · e^(−kt)   |   t½ = 0.693/k',360,368);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

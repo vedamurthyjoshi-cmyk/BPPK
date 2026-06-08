@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Passive Diffusion & pH Partition Theory – Biopharmaceutics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Passive Diffusion & pH Partition Theory</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Passive Diffusion & pH Partition Theory</h2>
+<p>Passive diffusion is the primary mechanism of drug absorption across biological membranes. It requires no energy and moves drug from high to low concentration.</p>
+<h3>Fick's Law of Diffusion</h3>
+<p>Rate = D × A × (C₁ − C₂) / h. Where D = diffusion coefficient, A = surface area, C₁−C₂ = concentration gradient, h = membrane thickness.</p>
+<h3>pH Partition Theory</h3>
+<p>Only the un-ionised form of a drug crosses lipid membranes. Weak acids are less ionised at low pH (acidic environment) and more ionised at high pH. Weak bases are the opposite. The Henderson-Hasselbalch equation predicts the degree of ionisation at any given pH.</p>
+<h3>Henderson-Hasselbalch Equations</h3>
+<p>Weak acids: pH = pKa + log([A⁻]/[HA]). Weak bases: pH = pKa + log([B]/[BH⁺]). Clinical implication: aspirin (weak acid, pKa 3.5) is well absorbed in the acidic stomach. Morphine (weak base, pKa 8) is better absorbed in the alkaline intestine.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Passive Diffusion</h2>
+<div class="question"><p>1. According to pH partition theory, weak acids are best absorbed in:</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. Acidic environments (stomach, low pH)</label><label onclick="cho(this,false)">B. Alkaline environments</label><label onclick="cho(this,false)">C. Neutral pH only</label><label onclick="cho(this,false)">D. pH has no effect on weak acids</label></div></div>
+<div class="question"><p>2. In Fick's law, increasing the surface area of absorption will:</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. Increase the rate of diffusion</label><label onclick="cho(this,false)">B. Decrease the rate of diffusion</label><label onclick="cho(this,false)">C. Have no effect</label><label onclick="cho(this,false)">D. Only affect ionised drugs</label></div></div>
+<div class="question"><p>3. Which form of a drug crosses the lipid membrane?</p>
+<div class="opts"><label onclick="cho(this,false)">A. Ionised form only</label><label onclick="cho(this,true)" data-c>B. Un-ionised form only</label><label onclick="cho(this,false)">C. Both forms equally</label><label onclick="cho(this,false)">D. Depends on molecular weight only</label></div></div>
+<div class="question"><p>4. The Henderson-Hasselbalch equation for a weak acid is:</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. pH = pKa + log([A⁻]/[HA])</label><label onclick="cho(this,false)">B. pH = pKa − log([HA]/[A⁻])</label><label onclick="cho(this,false)">C. pH = pKa × [A⁻]</label><label onclick="cho(this,false)">D. pH = pKa + log([HA]/[A⁻])</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// pH partition: membrane in centre, drug particles on left, moving right based on ionisation
+let mols=[];
+for(let i=0;i<30;i++) mols.push({x:80+Math.random()*220,y:60+Math.random()*270,vx:0.4+Math.random()*0.4,vy:(Math.random()-0.5)*0.5,ionised:Math.random()<0.5,crossed:false});
+function step(){t++;}
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+  // Left compartment (acidic, GIT lumen)
+  ctx.fillStyle='rgba(180,80,30,0.15)';ctx.fillRect(30,40,280,310);
+  ctx.strokeStyle='#E65100';ctx.lineWidth=1.5;ctx.strokeRect(30,40,280,310);
+  ctx.fillStyle='#E65100';ctx.font='11px Arial';ctx.textAlign='center';
+  ctx.fillText('GIT Lumen (pH 5–6)',170,58);
+  // Membrane
+  ctx.fillStyle='rgba(100,180,100,0.3)';ctx.fillRect(310,40,30,310);
+  ctx.strokeStyle='#43A047';ctx.lineWidth=2;ctx.strokeRect(310,40,30,310);
+  ctx.fillStyle='#43A047';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.save();ctx.translate(325,195);ctx.rotate(-Math.PI/2);ctx.fillText('Lipid Membrane',0,0);ctx.restore();
+  // Right compartment (blood, pH 7.4)
+  ctx.fillStyle='rgba(30,80,180,0.15)';ctx.fillRect(340,40,340,310);
+  ctx.strokeStyle='#1565C0';ctx.lineWidth=1.5;ctx.strokeRect(340,40,340,310);
+  ctx.fillStyle='#1565C0';ctx.font='11px Arial';ctx.textAlign='center';
+  ctx.fillText('Blood (pH 7.4)',510,58);
+  // Molecules
+  mols.forEach(m=>{
+    ctx.beginPath();ctx.arc(m.x,m.y,6,0,Math.PI*2);
+    ctx.fillStyle=m.ionised?'#EF5350':'#66BB6A';ctx.fill();
+    ctx.strokeStyle='white';ctx.lineWidth=0.5;ctx.stroke();
+    if(!m.ionised){m.x+=m.vx;}
+    else{m.x+=m.vx*0.05;} // ionised barely moves
+    m.y+=m.vy;
+    if(m.y<45)m.vy=Math.abs(m.vy);
+    if(m.y>345)m.vy=-Math.abs(m.vy);
+    if(m.x>670)m.x=80+Math.random()*100;
+    if(m.x<35&&!m.ionised)m.vx=Math.abs(m.vx);
+  });
+  // Legend
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,260,52);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('Passive Diffusion & pH Partition',18,28);
+  ctx.fillStyle='#66BB6A';ctx.fillRect(18,38,10,10);
+  ctx.fillStyle='white';ctx.font='10px Arial';ctx.fillText('Un-ionised (permeable)',32,48);
+  ctx.fillStyle='#EF5350';ctx.fillRect(150,38,10,10);
+  ctx.fillStyle='white';ctx.fillText('Ionised (trapped)',164,48);
+  // Fick equation
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(10,355,700,20);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText("Fick's Law: dC/dt = D·A·(C₁−C₂) / h    |    Henderson-Hasselbalch determines ionised fraction",360,368);
+}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

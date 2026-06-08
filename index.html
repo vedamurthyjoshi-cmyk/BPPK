@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Biopharmaceutics & Pharmacokinetics — Interactive Animations</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif}
+header{background:#1a1a2e;border-bottom:2px solid #1F4E79;padding:16px 24px}
+header h1{color:#AED6F1;font-size:1.2rem}
+header p{color:#888;font-size:0.82rem;margin-top:4px}
+.unit-block{padding:20px 24px 8px}
+.unit-title{color:#1F4E79;font-size:0.95rem;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #1F4E79}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:8px}
+.card{background:#1a1a2e;border:1px solid #2E4057;border-radius:8px;padding:12px;cursor:pointer;transition:border-color 0.2s,transform 0.1s;text-decoration:none;display:block}
+.card:hover{border-color:#4A90D9;transform:translateY(-2px)}
+.card .ch{font-size:0.7rem;color:#4A90D9;font-weight:bold;margin-bottom:4px}
+.card .title{font-size:0.85rem;color:#fff;line-height:1.3}
+.card .desc{font-size:0.72rem;color:#888;margin-top:4px;line-height:1.3}
+.unit-colors{
+  --I:#27AE60;--II:#F39C12;--III:#3498DB;--IV:#9B59B6;--V:#E74C3C;--P:#8D6E63
+}
+.unit-I .unit-title{color:#27AE60;border-color:#27AE60}
+.unit-I .card{border-color:#27AE6033}.unit-I .card:hover{border-color:#27AE60}
+.unit-I .card .ch{color:#27AE60}
+.unit-II .unit-title{color:#F39C12;border-color:#F39C12}
+.unit-II .card{border-color:#F39C1233}.unit-II .card:hover{border-color:#F39C12}
+.unit-II .card .ch{color:#F39C12}
+.unit-III .unit-title{color:#3498DB;border-color:#3498DB}
+.unit-III .card{border-color:#3498DB33}.unit-III .card:hover{border-color:#3498DB}
+.unit-III .card .ch{color:#3498DB}
+.unit-IV .unit-title{color:#9B59B6;border-color:#9B59B6}
+.unit-IV .card{border-color:#9B59B633}.unit-IV .card:hover{border-color:#9B59B6}
+.unit-IV .card .ch{color:#9B59B6}
+.unit-V .unit-title{color:#E74C3C;border-color:#E74C3C}
+.unit-V .card{border-color:#E74C3C33}.unit-V .card:hover{border-color:#E74C3C}
+.unit-V .card .ch{color:#E74C3C}
+.unit-P .unit-title{color:#8D6E63;border-color:#8D6E63}
+.unit-P .card{border-color:#8D6E6333}.unit-P .card:hover{border-color:#8D6E63}
+.unit-P .card .ch{color:#8D6E63}
+footer{text-align:center;padding:20px;color:#555;font-size:0.75rem;border-top:1px solid #1F4E79;margin-top:16px}
+</style></head><body>
+<header>
+  <h1>Biopharmaceutics & Pharmacokinetics — BP602T Interactive Animations</h1>
+  <p>Dr. Vedamurthy Joshi | Adichunchanagiri College of Pharmacy, B.G. Nagara | First Edition 2026</p>
+</header>
+
+<div class="unit-block unit-I">
+  <div class="unit-title">Unit I — ADME: Absorption, Distribution, Metabolism &amp; Elimination</div>
+  <div class="grid">
+    <a class="card" href="adme_overview.html"><div class="ch">Ch 1</div><div class="title">ADME Overview</div><div class="desc">Drug journey from administration to elimination</div></a>
+    <a class="card" href="rateprocesses.html"><div class="ch">Ch 1</div><div class="title">Rate Processes</div><div class="desc">Zero-order, first-order, and mixed-order kinetics</div></a>
+    <a class="card" href="gitanatomy.html"><div class="ch">Ch 2</div><div class="title">GIT Anatomy &amp; Absorption</div><div class="desc">GI tract regions relevant to drug absorption</div></a>
+    <a class="card" href="passivediffusion.html"><div class="ch">Ch 2</div><div class="title">Passive Diffusion</div><div class="desc">Fick's law and pH-partition theory</div></a>
+    <a class="card" href="activetransport.html"><div class="ch">Ch 2</div><div class="title">Active Transport</div><div class="desc">Carrier-mediated transport mechanisms</div></a>
+    <a class="card" href="pglycoprotein.html"><div class="ch">Ch 2</div><div class="title">P-glycoprotein Efflux</div><div class="desc">MDR efflux pump reducing absorption</div></a>
+    <a class="card" href="firstpasseffect.html"><div class="ch">Ch 2</div><div class="title">First-Pass Effect</div><div class="desc">Presystemic metabolism in gut wall and liver</div></a>
+    <a class="card" href="proteinbinding.html"><div class="ch">Ch 3</div><div class="title">Plasma Protein Binding</div><div class="desc">Bound vs free drug — clinical significance</div></a>
+    <a class="card" href="volumedistribution.html"><div class="ch">Ch 3</div><div class="title">Volume of Distribution</div><div class="desc">Vd concept and body compartments</div></a>
+    <a class="card" href="drugmetabolism.html"><div class="ch">Ch 4</div><div class="title">Drug Metabolism</div><div class="desc">CYP450 Phase I and Phase II biotransformation</div></a>
+    <a class="card" href="renalexcretion.html"><div class="ch">Ch 4</div><div class="title">Renal Excretion</div><div class="desc">GFR, tubular secretion, and reabsorption</div></a>
+    <a class="card" href="enterohepaticcirc.html"><div class="ch">Ch 4</div><div class="title">Enterohepatic Circulation</div><div class="desc">Biliary excretion and drug recycling</div></a>
+  </div>
+</div>
+
+<div class="unit-block unit-II">
+  <div class="unit-title">Unit II — Bioavailability, BCS Classification &amp; Bioequivalence</div>
+  <div class="grid">
+    <a class="card" href="bioavailability.html"><div class="ch">Ch 5</div><div class="title">Bioavailability — AUC, Cmax</div><div class="desc">IV vs oral AUC comparison, F calculation</div></a>
+    <a class="card" href="absoluteba.html"><div class="ch">Ch 5</div><div class="title">Absolute vs Relative BA</div><div class="desc">F(absolute) vs F(relative) with examples</div></a>
+    <a class="card" href="bcsclassification.html"><div class="ch">Ch 6</div><div class="title">BCS Classification</div><div class="desc">4-class grid with drug examples and implications</div></a>
+    <a class="card" href="bcsdissolution.html"><div class="ch">Ch 6</div><div class="title">BCS and Dissolution</div><div class="desc">Rate-limiting steps and biowaiver criteria</div></a>
+    <a class="card" href="bioequivalence.html"><div class="ch">Ch 7</div><div class="title">Bioequivalence Study</div><div class="desc">90% CI, 80–125% window, crossover design</div></a>
+    <a class="card" href="ivivc.html"><div class="ch">Ch 7</div><div class="title">IVIVC</div><div class="desc">In vitro–in vivo correlation — Levels A, B, C</div></a>
+  </div>
+</div>
+
+<div class="unit-block unit-III">
+  <div class="unit-title">Unit III — One-Compartment Models &amp; Non-Compartmental Analysis</div>
+  <div class="grid">
+    <a class="card" href="onecompartmentiv.html"><div class="ch">Ch 8</div><div class="title">One-Compartment IV Bolus</div><div class="desc">Cp(t) = Cp₀·e^(-Ket), semi-log plot</div></a>
+    <a class="card" href="pkparameters.html"><div class="ch">Ch 8</div><div class="title">PK Parameters</div><div class="desc">Ke, t½, Vd, CL — relationships and calculations</div></a>
+    <a class="card" href="ivinfusion.html"><div class="ch">Ch 9</div><div class="title">IV Infusion to Steady State</div><div class="desc">Rising Cp, Css, loading dose concept</div></a>
+    <a class="card" href="oraladsorption.html"><div class="ch">Ch 9</div><div class="title">Oral Absorption PK Model</div><div class="desc">Cmax, Tmax, Ka vs Ke, flip-flop kinetics</div></a>
+    <a class="card" href="auccalculation.html"><div class="ch">Ch 10</div><div class="title">AUC — Trapezoidal Rule</div><div class="desc">Linear and log-linear trapezoidal methods</div></a>
+    <a class="card" href="mrt.html"><div class="ch">Ch 10</div><div class="title">Mean Residence Time</div><div class="desc">MRT = AUMC/AUC, Vdss calculation</div></a>
+  </div>
+</div>
+
+<div class="unit-block unit-IV">
+  <div class="unit-title">Unit IV — Two-Compartment Model &amp; Multiple Dosing</div>
+  <div class="grid">
+    <a class="card" href="twocompartment.html"><div class="ch">Ch 11</div><div class="title">Two-Compartment Model</div><div class="desc">Biexponential curve, feathering method</div></a>
+    <a class="card" href="alphabetaphase.html"><div class="ch">Ch 11</div><div class="title">Alpha and Beta Phases</div><div class="desc">Distribution and elimination phases explained</div></a>
+    <a class="card" href="multipledosing.html"><div class="ch">Ch 12</div><div class="title">Multiple Dosing</div><div class="desc">Drug accumulation to steady state</div></a>
+    <a class="card" href="steadystate.html"><div class="ch">Ch 12</div><div class="title">Steady State</div><div class="desc">Css,max, Css,min, fluctuation, therapeutic window</div></a>
+    <a class="card" href="tdm.html"><div class="ch">Ch 12</div><div class="title">Therapeutic Drug Monitoring</div><div class="desc">Vancomycin, phenytoin, digoxin TDM</div></a>
+  </div>
+</div>
+
+<div class="unit-block unit-V">
+  <div class="unit-title">Unit V — Nonlinear PK and Computational Methods</div>
+  <div class="grid">
+    <a class="card" href="nonlinearpk.html"><div class="ch">Ch 13</div><div class="title">Nonlinear Pharmacokinetics</div><div class="desc">Michaelis-Menten: Vmax, Km, phenytoin example</div></a>
+  </div>
+</div>
+
+<footer>
+  © 2026 Dr. Vedamurthy Joshi | Adichunchanagiri College of Pharmacy, B.G. Nagara, Karnataka<br>
+  BP602T Biopharmaceutics and Pharmacokinetics | NEP 2020 | All animations free to use for educational purposes
+</footer>
+</body></html>

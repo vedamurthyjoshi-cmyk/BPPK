@@ -1,0 +1,121 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Oral Absorption — GIT to Systemic Circulation – Biopharmaceutics & Pharmacokinetics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Oral Absorption — GIT to Systemic Circulation</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Oral Absorption — From Tablet to Systemic Circulation</h2><p>After oral dosing, a drug undergoes a series of sequential processes before reaching the systemic circulation. Each step can reduce the amount of drug that finally reaches the target.</p><h3>Step 1 — Disintegration and Dissolution</h3><p>Tablet disintegrates → drug particles dissolve in GI fluid. Rate governed by drug physicochemical properties, particle size, and formulation. Rate-limiting for BCS Class II drugs.</p><h3>Step 2 — Absorption across GI Wall</h3><p>Dissolved drug crosses enterocytes — primarily passive diffusion for lipophilic drugs, carrier-mediated for hydrophilic drugs. P-gp efflux may reduce absorption. Gut wall CYP3A4 contributes to first-pass metabolism.</p><h3>Step 3 — Portal Vein Transport</h3><p>Absorbed drug enters portal vein and is carried directly to the liver. The liver extracts a fraction of the drug before it reaches systemic circulation — the first-pass effect. Extraction ratio (ER) determines the fraction lost.</p><h3>Step 4 — Systemic Circulation</h3><p>F (bioavailability) = Fa × Fg × Fh. Fa = fraction absorbed from gut, Fg = fraction surviving gut wall metabolism, Fh = fraction surviving hepatic first-pass. All three factors reduce F.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Oral Absorption</h2><div class="question"><p>1. The correct order of events after oral drug administration is:</p><div class="opts"><label onclick="cho(this,true)" data-c>A. Disintegration → Dissolution → Absorption → Portal blood → Liver → Systemic</label><label onclick="cho(this,false)">B. Absorption → Disintegration → Dissolution → Portal blood</label><label onclick="cho(this,false)">C. Dissolution → Distribution → Metabolism → Excretion</label><label onclick="cho(this,false)">D. Portal blood → Absorption → Disintegration → Systemic</label></div></div><div class="question"><p>2. Absolute bioavailability (F) is the product of:</p><div class="opts"><label onclick="cho(this,false)">A. Dose × clearance</label><label onclick="cho(this,true)" data-c>B. Fraction absorbed (Fa) × fraction surviving gut wall (Fg) × fraction surviving liver (Fh)</label><label onclick="cho(this,false)">C. AUC × half-life</label><label onclick="cho(this,false)">D. Vd × Ke</label></div></div><div class="question"><p>3. Drug with extraction ratio (ER) = 0.85 will have hepatic bioavailability (Fh) of:</p><div class="opts"><label onclick="cho(this,false)">A. 85%</label><label onclick="cho(this,false)">B. 50%</label><label onclick="cho(this,true)" data-c>C. 15%</label><label onclick="cho(this,false)">D. 100%</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Show drug tablet dissolving → absorbed → portal vein → liver → blood
+// Animated particles from tablet through GIT wall into blood
+
+let particles = [];
+function spawnParticle(){
+  particles.push({x:120, y:200+Math.random()*40-20, vx:1.2+Math.random()*0.5, vy:(Math.random()-0.5)*0.6, stage:'gut', alpha:1, r:4});
+}
+let spawnTimer=0;
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  // GI tract (left)
+  ctx.fillStyle='rgba(139,90,43,0.2)';ctx.fillRect(20,80,200,240);
+  ctx.strokeStyle='#8D6E63';ctx.lineWidth=2;ctx.strokeRect(20,80,200,240);
+  ctx.fillStyle='#8D6E63';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('GI Lumen',120,74);
+
+  // Tablet (bottom of GIT)
+  const tabAlpha=Math.max(0,1-t*0.003);
+  ctx.globalAlpha=tabAlpha;
+  ctx.fillStyle='#F1C40F';ctx.fillRect(75,290,90,28);
+  ctx.strokeStyle='#E67E22';ctx.lineWidth=1;ctx.strokeRect(75,290,90,28);
+  ctx.fillStyle='#8B6914';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText('TABLET',120,309);
+  ctx.globalAlpha=1;
+
+  // GI wall (membrane)
+  ctx.fillStyle='rgba(74,144,217,0.3)';ctx.fillRect(220,80,40,240);
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(220,80);ctx.lineTo(220,320);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(260,80);ctx.lineTo(260,320);ctx.stroke();
+  ctx.fillStyle='#4A90D9';ctx.font='bold 9px Arial';ctx.textAlign='center';
+  ctx.fillText('Gut',240,74); ctx.fillText('Wall',240,86);
+
+  // Portal vein
+  ctx.fillStyle='rgba(231,76,60,0.25)';ctx.fillRect(270,150,80,60);
+  ctx.strokeStyle='#E74C3C';ctx.lineWidth=2;ctx.strokeRect(270,150,80,60);
+  ctx.fillStyle='#E74C3C';ctx.font='9px Arial';ctx.textAlign='center';
+  ctx.fillText('Portal',310,172); ctx.fillText('Vein',310,186);
+
+  // Liver
+  ctx.fillStyle='rgba(146,43,33,0.3)';ctx.fillRect(380,110,110,80);
+  ctx.strokeStyle='#922B21';ctx.lineWidth=2;ctx.strokeRect(380,110,110,80);
+  ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('Liver',435,148); ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
+  ctx.fillText('First-Pass',435,163);ctx.fillText('Metabolism',435,176);
+
+  // Systemic circulation
+  ctx.fillStyle='rgba(26,82,118,0.3)';ctx.fillRect(530,80,170,240);
+  ctx.strokeStyle='#1A5276';ctx.lineWidth=2;ctx.strokeRect(530,80,170,240);
+  ctx.fillStyle='#AED6F1';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('Systemic',615,100); ctx.fillText('Circulation',615,115);
+
+  // Arrows
+  const arr=(x1,y1,x2,y2,col,label)=>{
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+    const a=Math.atan2(y2-y1,x2-x1);
+    ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-8*Math.cos(a-0.4),y2-8*Math.sin(a-0.4));
+    ctx.lineTo(x2-8*Math.cos(a+0.4),y2-8*Math.sin(a+0.4));ctx.closePath();ctx.fill();
+    if(label){ctx.fillStyle=col;ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText(label,(x1+x2)/2,(y1+y2)/2-6);}
+  };
+  arr(260,200,270,180,'#27AE60','Absorption');
+  arr(350,180,380,160,'#E74C3C','Portal');
+  arr(490,150,530,180,'#3498DB','To blood');
+
+  // Spawn particles
+  spawnTimer++;
+  if(spawnTimer%25===0 && t<500) spawnParticle();
+
+  // Update and draw particles
+  particles=particles.filter(p=>{
+    // Stage logic
+    if(p.stage==='gut' && p.x>218){p.stage='wall';}
+    if(p.stage==='wall' && p.x>258){p.stage='portal';p.vy=(p.y<180)?0.5:-0.5;}
+    if(p.stage==='portal' && p.y<165 && p.x>350){p.stage='liver';p.vx=0.8;p.vy=0;}
+    if(p.stage==='liver' && p.x>488){
+      if(Math.random()<0.35){p.alpha=0;} // first pass loss
+      else{p.stage='blood';p.vx=0.6;p.vy=(Math.random()-0.5)*0.5;}
+    }
+    if(p.stage==='blood' && p.x>700){return false;}
+
+    // Color by stage
+    const cols={gut:'#F1C40F',wall:'#4A90D9',portal:'#E74C3C',liver:'#C0392B',blood:'#2ECC71'};
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=cols[p.stage]||'#fff';ctx.globalAlpha=p.alpha*0.85;ctx.fill();ctx.globalAlpha=1;
+
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.y<85||p.y>315){p.vy*=-1;}
+    return p.alpha>0;
+  });
+
+  // Info
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,338,700,38);
+  ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.textAlign='left';
+  ctx.fillText('Oral absorption: Dissolution → GI wall → Portal vein → Liver → Systemic blood',18,355);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('First-pass metabolism in liver reduces fraction reaching systemic circulation (↓ bioavailability)',18,370);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

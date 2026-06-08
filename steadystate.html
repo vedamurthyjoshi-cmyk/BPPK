@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Steady State — Css,max, Css,min and Fluctuation – Biopharmaceutics & Pharmacokinetics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px;font-size:1rem}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px;font-size:0.92rem}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px;font-size:1rem}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Steady State — Css,max, Css,min and Fluctuation</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>Steady State — Css,max, Css,min, and Fluctuation</h2><p>Steady state (SS) is achieved when the amount eliminated during each dosing interval exactly equals the dose administered. Drug levels oscillate between Css,max (peak) and Css,min (trough) at SS.</p><h3>Time to Steady State</h3><p>Determined entirely by t½ — approximately 4-5 half-lives. Increasing dose or frequency does NOT shorten the time to reach SS, only changes the SS level.</p><h3>Key SS Equations</h3><p>Css,max = (D/Vd) / (1 - e^(-Ke×τ)). Css,min = Css,max × e^(-Ke×τ). Average Css = F×D/(CL×τ). Fluctuation = (Css,max - Css,min) / Css,avg.</p><h3>Therapeutic Window</h3><p>Css,max must stay below MTC (minimum toxic concentration). Css,min must stay above MEC (minimum effective concentration). Dosing interval and dose are chosen to keep both Css,max and Css,min within the therapeutic window.</p><h3>TDM Sampling</h3><p>Trough (Css,min): sample just before next dose. Peak (Css,max): at 1 h post-dose for oral, 30 min post-infusion for IV. Both must be at steady state (≥5 half-lives of dosing).</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Steady State</h2><div class="question"><p>1. Increasing the dose (without changing interval) at steady state will:</p><div class="opts"><label onclick="cho(this,false)">A. Shorten the time to reach steady state</label><label onclick="cho(this,false)">B. Decrease Css,min and Css,max</label><label onclick="cho(this,true)" data-c>C. Increase Css,max and Css,min proportionally, but not time to SS</label><label onclick="cho(this,false)">D. Lengthen the time to reach steady state</label></div></div><div class="question"><p>2. For aminoglycoside TDM, the trough is sampled:</p><div class="opts"><label onclick="cho(this,true)" data-c>A. Just before the next dose, at steady state</label><label onclick="cho(this,false)">B. 1 hour after the first dose</label><label onclick="cho(this,false)">C. Immediately after IV infusion ends</label><label onclick="cho(this,false)">D. At peak (Cmax)</label></div></div><div class="question"><p>3. Average steady-state plasma concentration is calculated as:</p><div class="opts"><label onclick="cho(this,false)">A. Dose × Ke</label><label onclick="cho(this,false)">B. Css,max + Css,min / 2</label><label onclick="cho(this,true)" data-c>C. F × Dose / (CL × τ)</label><label onclick="cho(this,false)">D. AUC × Ke</label></div></div></div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+// Show multiple dosing reaching steady state with therapeutic window
+// Therapeutic window (shaded band), accumulating doses
+const Ke=0.08, Vd=25, dose=200, tau=12, TMAX=96;
+const Css_max=(dose/Vd)/(1-Math.exp(-Ke*tau));
+const Css_min=Css_max*Math.exp(-Ke*tau);
+const TW_max=Css_max*1.15;  // therapeutic window upper
+const TW_min=Css_min*0.6;   // therapeutic window lower
+
+function CpMD(time){
+  let cp=0;
+  for(let i=0;i*tau<=time;i++){
+    cp+=(dose/Vd)*Math.exp(-Ke*(time-i*tau));
+  }
+  return cp;
+}
+
+const BX=60,BY=30,BW=640,BH=280;
+function toX(tm){return BX+tm*(BW/TMAX);}
+function toY(cp){return BY+BH-cp*(BH/(Css_max*1.4));}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  // Therapeutic window shading
+  ctx.fillStyle='rgba(46,204,113,0.08)';
+  ctx.fillRect(BX,toY(TW_max),BW,toY(TW_min)-toY(TW_max));
+
+  // Axes
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(BX,BY+BH);ctx.lineTo(BX+BW,BY+BH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(BX,BY+BH);ctx.lineTo(BX,BY);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (hours)',BX+BW/2,BY+BH+20);
+  ctx.save();ctx.translate(18,BY+BH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Cp (mg/L)',0,0);ctx.restore();
+  for(let i=0;i<=TMAX;i+=12){ctx.fillStyle='#555';ctx.font='8px Arial';ctx.textAlign='center';ctx.fillText(i,toX(i),BY+BH+12);}
+  for(let c=0;c<=Math.ceil(Css_max*1.4);c+=2){ctx.fillStyle='#555';ctx.font='8px Arial';ctx.textAlign='right';ctx.fillText(c,BX-3,toY(c)+3);}
+
+  // Therapeutic window labels
+  ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(46,204,113,0.5)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(BX,toY(TW_max));ctx.lineTo(BX+BW,toY(TW_max));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(BX,toY(TW_min));ctx.lineTo(BX+BW,toY(TW_min));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(46,204,113,0.7)';ctx.font='9px Arial';ctx.textAlign='right';
+  ctx.fillText('MTC (toxic)',BX+BW-4,toY(TW_max)-4);
+  ctx.fillText('MEC (minimum effective)',BX+BW-4,toY(TW_min)+12);
+
+  // Css_max and Css_min lines
+  ctx.setLineDash([4,4]);ctx.strokeStyle='#E74C3C';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(BX,toY(Css_max));ctx.lineTo(BX+BW,toY(Css_max));ctx.stroke();
+  ctx.strokeStyle='#F39C12';
+  ctx.beginPath();ctx.moveTo(BX,toY(Css_min));ctx.lineTo(BX+BW,toY(Css_min));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#E74C3C';ctx.font='9px Arial';ctx.textAlign='left';
+  ctx.fillText('Css,max='+Math.round(Css_max*10)/10,BX+4,toY(Css_max)-4);
+  ctx.fillStyle='#F39C12';
+  ctx.fillText('Css,min='+Math.round(Css_min*10)/10,BX+4,toY(Css_min)+12);
+
+  // Dose markers
+  for(let i=0;i*tau<=TMAX;i++){
+    ctx.strokeStyle='rgba(52,152,219,0.3)';ctx.lineWidth=1;ctx.setLineDash([2,4]);
+    ctx.beginPath();ctx.moveTo(toX(i*tau),BY);ctx.lineTo(toX(i*tau),BY+BH);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Multiple dosing curve
+  ctx.beginPath();ctx.strokeStyle='#3498DB';ctx.lineWidth=2.5;
+  ctx.moveTo(toX(0),toY(dose/Vd));
+  for(let ti=0.1;ti<=TMAX;ti+=0.1) ctx.lineTo(toX(ti),toY(Math.max(0,CpMD(ti))));
+  ctx.stroke();
+
+  // Animated dot
+  const tNow=(t*0.3)%TMAX;
+  const cpNow=Math.max(0,CpMD(tNow));
+  ctx.beginPath();ctx.arc(toX(tNow),toY(cpNow),5,0,Math.PI*2);
+  ctx.fillStyle='#F1C40F';ctx.fill();
+
+  // Fluctuation bracket at SS
+  const ssX=toX(6*tau);
+  ctx.strokeStyle='#9B59B6';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ssX+5,toY(Css_max));ctx.lineTo(ssX+15,toY(Css_max));
+  ctx.lineTo(ssX+15,toY(Css_min));ctx.lineTo(ssX+5,toY(Css_min));ctx.stroke();
+  ctx.fillStyle='#9B59B6';ctx.font='9px Arial';ctx.textAlign='left';
+  ctx.fillText('Fluctuation',ssX+18,toY((Css_max+Css_min)/2)+3);
+
+  // Info
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,338,700,38);
+  ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.textAlign='left';
+  ctx.fillText('Steady State: Input rate = Elimination rate at each τ',18,354);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('τ='+tau+'h  Ke='+Ke+'h⁻¹  Css,max='+Math.round(Css_max*10)/10+' mg/L  Css,min='+Math.round(Css_min*10)/10+' mg/L  Fluct=(Css,max-Css,min)/Css,avg',18,370);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

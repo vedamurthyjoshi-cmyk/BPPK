@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>PK Parameters — Ke, t½, Vd, CL</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>Pharmacokinetic Parameters — Ke, t½, Vd, CL</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory">
+<h2>Primary PK Parameters</h2>
+<p>Four fundamental parameters describe one-compartment IV bolus pharmacokinetics completely.</p>
+<h3>Ke — Elimination Rate Constant (h⁻¹)</h3>
+<p>First-order rate constant for drug elimination. Units: h⁻¹ (or min⁻¹). Slope of semi-log Cp-time plot = -Ke/2.303. Ke = CL/Vd = 0.693/t½.</p>
+<h3>t½ — Half-Life (h)</h3>
+<p>Time for Cp to fall by 50%. t½ = 0.693/Ke = 0.693 × Vd/CL. Independent of dose and concentration (first-order). Time to steady state ≈ 4-5 × t½.</p>
+<h3>Vd — Volume of Distribution (L)</h3>
+<p>Apparent volume relating total drug in body to plasma concentration. Vd = Dose/Cp₀ = CL/Ke. Not a real physiological volume.</p>
+<h3>CL — Clearance (L/h)</h3>
+<p>Volume of plasma completely cleared of drug per unit time. CL = Ke × Vd = Dose/AUC. Additive: CL(total) = CL(renal) + CL(hepatic) + CL(other).</p>
+</div></div>
+<div class="panel" id="mcq"><div class="mcq">
+<h2>MCQs — PK Parameters</h2>
+<div class="question"><p>1. If Ke = 0.231 h⁻¹, the half-life is:</p>
+<div class="opts">
+  <label onclick="cho(this,false)">A. 0.231 hours</label>
+  <label onclick="cho(this,true)" data-c>B. 3 hours</label>
+  <label onclick="cho(this,false)">C. 6 hours</label>
+  <label onclick="cho(this,false)">D. 0.693 hours</label>
+</div></div>
+<div class="question"><p>2. Clearance can be calculated from IV bolus data as:</p>
+<div class="opts">
+  <label onclick="cho(this,false)">A. Cp₀/Ke</label>
+  <label onclick="cho(this,true)" data-c>B. Dose/AUC</label>
+  <label onclick="cho(this,false)">C. Vd × t½</label>
+  <label onclick="cho(this,false)">D. Ke/Vd</label>
+</div></div>
+<div class="question"><p>3. A drug has Vd = 30 L and CL = 3 L/h. Its half-life is:</p>
+<div class="opts">
+  <label onclick="cho(this,false)">A. 10 hours</label>
+  <label onclick="cho(this,false)">B. 3 hours</label>
+  <label onclick="cho(this,true)" data-c>C. 6.93 hours</label>
+  <label onclick="cho(this,false)">D. 0.693 hours</label>
+</div></div>
+</div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+
+const Ke=0.1,Cp0=20,Vd=20,D=400;
+const thalf=0.693/Ke, CL=Ke*Vd, TMAX=50;
+function Cp(tt){return Cp0*Math.exp(-Ke*tt);}
+
+const BX=60,BY=35,BW=380,BH=280;
+function toX(tm){return BX+tm*(BW/TMAX);}
+function toY(cp){return BY+BH-cp*(BH/22);}
+
+// Right panel — parameter boxes
+const params=[
+  {label:'Ke',val:Ke+' h⁻¹',formula:'= 0.693/t½ = CL/Vd',col:'#E74C3C',x:480,y:50},
+  {label:'t½',val:Math.round(thalf*100)/100+' h',formula:'= 0.693/Ke',col:'#F39C12',x:600,y:50},
+  {label:'Vd',val:Vd+' L',formula:'= Dose/Cp₀',col:'#2ECC71',x:480,y:165},
+  {label:'CL',val:CL+' L/h',formula:'= Ke×Vd = D/AUC',col:'#3498DB',x:600,y:165},
+];
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  // Axes
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(BX,BY+BH);ctx.lineTo(BX+BW,BY+BH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(BX,BY+BH);ctx.lineTo(BX,BY);ctx.stroke();
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.textAlign='center';
+  ctx.fillText('Time (hours)',BX+BW/2,BY+BH+20);
+  ctx.save();ctx.translate(20,BY+BH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Cp (mg/L)',0,0);ctx.restore();
+  for(let i=0;i<=TMAX;i+=10){ctx.fillStyle='#555';ctx.font='8px Arial';ctx.textAlign='center';ctx.fillText(i,toX(i),BY+BH+12);}
+  for(let c=0;c<=20;c+=5){ctx.fillStyle='#555';ctx.textAlign='right';ctx.fillText(c,BX-3,toY(c)+3);}
+
+  // Half-life markers
+  [1,2,3,4].forEach(n=>{
+    const tx=n*thalf, cy=Cp(tx);
+    if(tx>TMAX) return;
+    ctx.setLineDash([2,4]);ctx.strokeStyle='rgba(241,196,15,0.3)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(toX(tx),toY(cy));ctx.lineTo(toX(tx),toY(0));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(BX,toY(cy));ctx.lineTo(toX(tx),toY(cy));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#F39C12';ctx.font='8px Arial';ctx.textAlign='center';
+    ctx.fillText(n+'×t½',toX(tx),toY(cy)-6);
+    ctx.fillText(Math.round(cy)+' mg/L',BX+5,toY(cy)-3);
+  });
+
+  // Main curve
+  ctx.beginPath();ctx.strokeStyle='#3498DB';ctx.lineWidth=2.5;
+  for(let ti=0;ti<=TMAX;ti+=0.2){
+    const cp=Cp(ti);
+    if(ti===0) ctx.moveTo(toX(ti),toY(cp));
+    else ctx.lineTo(toX(ti),toY(Math.max(0,cp)));
+  }
+  ctx.stroke();
+
+  // Animated dot
+  const tNow=(t*0.25)%TMAX;
+  const cpNow=Cp(tNow);
+  ctx.beginPath();ctx.arc(toX(tNow),toY(cpNow),6,0,Math.PI*2);
+  ctx.fillStyle='#F1C40F';ctx.fill();
+  // Current Cp label
+  ctx.fillStyle='#F1C40F';ctx.font='9px Arial';ctx.textAlign='left';
+  ctx.fillText('t='+Math.round(tNow)+' h',toX(tNow)+8,toY(cpNow)-8);
+  ctx.fillText('Cp='+Math.round(cpNow*10)/10+' mg/L',toX(tNow)+8,toY(cpNow)+4);
+
+  // Parameter boxes
+  params.forEach(p=>{
+    ctx.fillStyle=p.col+'33';ctx.fillRect(p.x,p.y,110,100);
+    ctx.strokeStyle=p.col;ctx.lineWidth=2;ctx.strokeRect(p.x,p.y,110,100);
+    ctx.fillStyle=p.col;ctx.font='bold 18px Arial';ctx.textAlign='center';
+    ctx.fillText(p.label,p.x+55,p.y+28);
+    ctx.fillStyle='white';ctx.font='bold 13px Arial';
+    ctx.fillText(p.val,p.x+55,p.y+50);
+    ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
+    ctx.fillText(p.formula,p.x+55,p.y+70);
+    ctx.fillStyle='#555';ctx.font='9px Arial';
+  });
+
+  // Arrows connecting boxes
+  const arr=(x1,y1,x2,y2,col)=>{
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+  };
+  arr(535,100,545,165,'#aaa');  // Ke→Vd
+  arr(655,100,645,165,'#aaa');  // t½→CL
+  arr(590,105,600,105,'#F39C12'); // Ke→t½
+
+  // Relationship labels
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';ctx.textAlign='center';
+  ctx.fillText('Ke = CL/Vd',540,295);
+  ctx.fillText('t½ = 0.693/Ke',540,310);
+  ctx.fillText('CL = Ke × Vd',540,325);
+  ctx.fillText('Vd = Dose/Cp₀',540,340);
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1;ctx.strokeRect(470,283,200,64);
+
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,338,440,38);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='left';
+  ctx.fillText('Each half-life: Cp falls by 50%',18,354);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Ke='+Ke+' h⁻¹  t½='+thalf+'h  Vd='+Vd+'L  CL='+CL+' L/h',18,370);
+}
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>

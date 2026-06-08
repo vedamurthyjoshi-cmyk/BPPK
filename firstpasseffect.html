@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>First Pass Effect – Biopharmaceutics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>First Pass Effect — Presystemic Hepatic Metabolism</h1>
+<div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory"><h2>First Pass Effect</h2><p>After oral administration, drugs absorbed from the GIT enter the portal circulation and pass through the liver before reaching systemic circulation. The liver may extensively metabolise the drug, significantly reducing its bioavailability. This is the first pass effect (presystemic or pre-systemic metabolism).</p><h3>Clinical Significance</h3><p>Drugs with high first-pass effect have low oral bioavailability and require much higher oral doses than parenteral doses. Examples: morphine (oral BA ~30%), lignocaine (oral BA ~35%), propranolol (oral BA ~26%), nitroglycerin (oral BA ~1% — given sublingually to bypass liver).</p><h3>Bypassing First Pass Effect</h3><p>Sublingual (nitroglycerin), transdermal (fentanyl patches), rectal (suppositories — partial bypass), inhalation, and parenteral routes all bypass hepatic first-pass metabolism. Prodrugs can also be used to improve oral BA.</p></div></div>
+<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — First Pass Effect</h2>
+<div class="question"><p>1. First pass effect refers to:</p><div class="opts"><label onclick="cho(this,false)">A. Drug metabolism in the GIT lumen</label><label onclick="cho(this,true)" data-c>B. Hepatic metabolism of drug after GIT absorption, before reaching systemic circulation</label><label onclick="cho(this,false)">C. Renal metabolism of drug</label><label onclick="cho(this,false)">D. Drug degradation in the stomach</label></div></div>
+<div class="question"><p>2. Nitroglycerin is given sublingually because:</p><div class="opts"><label onclick="cho(this,true)" data-c>A. It has very high first pass effect and near-zero oral bioavailability</label><label onclick="cho(this,false)">B. It is poorly soluble in water</label><label onclick="cho(this,false)">C. It is unstable in acid pH</label><label onclick="cho(this,false)">D. It causes nausea when swallowed</label></div></div>
+<div class="question"><p>3. Which route completely avoids first pass effect?</p><div class="opts"><label onclick="cho(this,false)">A. Oral</label><label onclick="cho(this,false)">B. Rectal</label><label onclick="cho(this,true)" data-c>C. Intravenous</label><label onclick="cho(this,false)">D. Buccal (partial bypass only)</label></div></div>
+</div></div>
+<footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=720,H=380;let t=0,running=true;
+let particles=[];
+
+function spawnParticle(){
+  if(particles.length<25){
+    particles.push({x:60,y:160+Math.random()*80,speed:1.2+Math.random()*0.5,stage:0,metabolised:false,alpha:1});
+  }
+}
+
+// Path: Oral dose → GIT → Portal vein → Liver → (some metabolised) → Systemic blood
+const path=[
+  {x:60,y:200},{x:180,y:200},  // GIT
+  {x:250,y:240},{x:350,y:240}, // Portal vein
+  {x:420,y:200},{x:420,y:160}, // Liver entry
+  {x:560,y:160},{x:660,y:160}  // Systemic
+];
+
+function getPos(prog){
+  const total=path.length-1;
+  const idx=Math.min(Math.floor(prog*total),total-1);
+  const frac=(prog*total)-idx;
+  const a=path[idx],b=path[idx+1]||path[total];
+  return {x:a.x+(b.x-a.x)*frac, y:a.y+(b.y-a.y)*frac};
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+
+  // Draw organs
+  // GIT
+  ctx.fillStyle='rgba(139,90,43,0.3)';ctx.fillRect(30,140,140,100);
+  ctx.strokeStyle='#795548';ctx.lineWidth=2;ctx.strokeRect(30,140,140,100);
+  ctx.fillStyle='#795548';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText('GIT',100,130);
+
+  // Portal vein (pipe)
+  ctx.fillStyle='rgba(139,90,43,0.4)';ctx.fillRect(170,225,190,24);
+  ctx.strokeStyle='#A04000';ctx.lineWidth=1;ctx.strokeRect(170,225,190,24);
+  ctx.fillStyle='#A04000';ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText('Portal Vein',265,222);
+
+  // Liver
+  ctx.fillStyle='rgba(139,69,19,0.5)';ctx.fillRect(360,130,140,120);
+  ctx.strokeStyle='#8B4513';ctx.lineWidth=3;ctx.strokeRect(360,130,140,120);
+  ctx.fillStyle='#DEB887';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('LIVER',430,200);
+  ctx.font='9px Arial';ctx.fillStyle='#ccc';ctx.fillText('CYP450 Metabolism',430,215);
+
+  // Systemic blood
+  ctx.fillStyle='rgba(192,57,43,0.3)';ctx.fillRect(510,120,180,60);
+  ctx.strokeStyle='#C0392B';ctx.lineWidth=2;ctx.strokeRect(510,120,180,60);
+  ctx.fillStyle='#C0392B';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText('Systemic Circulation',600,156);
+
+  // Heart
+  ctx.fillStyle='rgba(192,57,43,0.5)';ctx.fillRect(620,240,80,70);
+  ctx.strokeStyle='#E74C3C';ctx.lineWidth=2;ctx.strokeRect(620,240,80,70);
+  ctx.fillStyle='#E74C3C';ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.fillText('Heart',660,280);
+
+  // Arrows
+  ctx.strokeStyle='#AED6F1';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(510,150);ctx.lineTo(620,150);ctx.stroke(); // sys → heart
+  ctx.beginPath();ctx.moveTo(660,240);ctx.lineTo(660,195);ctx.stroke();  // up arrow sys
+  ctx.setLineDash([]);
+
+  // Oral dose label
+  ctx.fillStyle='#F39C12';ctx.font='bold 12px Arial';ctx.textAlign='center';
+  ctx.fillText('💊 Oral Dose',55,320);
+  ctx.strokeStyle='#F39C12';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(55,295);ctx.lineTo(55,250);ctx.lineTo(80,220);ctx.stroke();
+
+  // Particles
+  if(t%20===0) spawnParticle();
+  particles.forEach((p,i)=>{
+    p.stage+=0.004;
+    if(p.stage>=1){particles.splice(i,1);return;}
+    const pos=getPos(p.stage);
+
+    // Metabolise some at liver (stage 0.55-0.65)
+    if(p.stage>0.55 && !p.metabolised && Math.random()<0.015){
+      p.metabolised=true;
+    }
+    if(p.metabolised && p.stage>0.65){
+      // Draw metabolite falling down
+      ctx.beginPath();ctx.arc(pos.x,pos.y+30+(p.stage-0.65)*200,3,0,Math.PI*2);
+      ctx.fillStyle='rgba(231,76,60,0.5)';ctx.fill();
+      return;
+    }
+
+    ctx.beginPath();ctx.arc(pos.x,pos.y,5,0,Math.PI*2);
+    ctx.fillStyle=p.metabolised?'rgba(231,76,60,0.3)':'#F39C12';
+    ctx.globalAlpha=Math.max(0.4,1-p.stage*0.3);ctx.fill();ctx.globalAlpha=1;
+  });
+
+  // % reaching systemic
+  const reach=Math.round(30+Math.sin(t*0.02)*5);
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(510,185,180,40);
+  ctx.fillStyle='#2ECC71';ctx.font='bold 13px Arial';ctx.textAlign='center';
+  ctx.fillText(`Only ~${reach}% reaches`,600,203);ctx.fillText('systemic circulation',600,219);
+
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,230,42);
+  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
+  ctx.fillText('First Pass Effect',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Hepatic presystemic metabolism',18,44);
+}
+
+function step(){t++;}
+function loop(){if(running)step();draw();requestAnimationFrame(loop);}
+loop();
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+</script></body></html>
