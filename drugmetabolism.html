@@ -1,97 +1,129 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<title>Drug Metabolism — CYP450 Enzymes – Biopharmaceutics</title>
+<title>Drug Metabolism – Biopharmaceutics</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
-<h1>Drug Metabolism — CYP450 Enzymes</h1>
+<h1>Drug Metabolism — CYP450 Phase I and Phase II</h1>
 <div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
 <div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
-<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
-<div class="panel" id="theory"><div class="theory"><h2>Drug Metabolism — Cytochrome P450 (CYP450)</h2>
-<p>Drug metabolism is the enzymatic biotransformation of a drug into a different chemical form (metabolite). The liver is the primary site. The goal is to convert lipophilic drugs into more water-soluble forms for excretion.</p>
-<h3>Phase I Reactions</h3>
-<p>Introduce or unmask a polar functional group. Reactions: oxidation (most common, by CYP450), reduction, hydrolysis. CYP3A4 metabolises ~50% of all drugs. CYP2D6 (~25%), CYP2C9 (~15%), CYP1A2 (~10%). Genetic polymorphism: poor metabolisers vs ultra-rapid metabolisers.</p>
-<h3>Phase II Reactions (Conjugation)</h3>
-<p>Attach a polar endogenous molecule. Reactions: glucuronidation (UGT enzymes), sulfation, acetylation, methylation, glutathione conjugation. Products are almost always inactive and water-soluble.</p>
-<h3>Drug Interactions at CYP450</h3>
-<p>Inducers (rifampicin, carbamazepine, phenytoin): increase CYP activity → faster metabolism → reduced drug effect. Inhibitors (ketoconazole, fluconazole, erythromycin): decrease CYP activity → slower metabolism → drug accumulation → toxicity.</p></div></div>
-<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Drug Metabolism</h2>
-<div class="question"><p>1. CYP3A4 metabolises approximately what percentage of all drugs?</p>
-<div class="opts"><label onclick="cho(this,false)">A. 10%</label><label onclick="cho(this,false)">B. 25%</label><label onclick="cho(this,true)" data-c>C. 50%</label><label onclick="cho(this,false)">D. 75%</label></div></div>
-<div class="question"><p>2. Rifampicin reduces warfarin effect because it:</p>
-<div class="opts"><label onclick="cho(this,true)" data-c>A. Induces CYP450 enzymes, increasing warfarin metabolism</label><label onclick="cho(this,false)">B. Inhibits CYP450</label><label onclick="cho(this,false)">C. Displaces warfarin from albumin</label><label onclick="cho(this,false)">D. Reduces warfarin absorption</label></div></div>
-<div class="question"><p>3. Phase II metabolism reactions involve:</p>
-<div class="opts"><label onclick="cho(this,false)">A. Oxidation by CYP450</label><label onclick="cho(this,false)">B. Hydrolysis of ester bonds</label><label onclick="cho(this,true)" data-c>C. Conjugation with endogenous molecules (glucuronide, sulfate)</label><label onclick="cho(this,false)">D. Reduction of ketone groups</label></div></div></div></div>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0;particles=initParticles()">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory">
+<h2>Drug Metabolism — Hepatic Biotransformation</h2>
+<p>Metabolism converts lipophilic drugs to polar, water-soluble metabolites for excretion. The liver is the primary site, via CYP450 enzymes (Phase I) and conjugation enzymes (Phase II).</p>
+<h3>Phase I — Functionalisation (CYP450)</h3>
+<p>Oxidation (most common), reduction, hydrolysis. Introduces or unmasks polar functional groups (-OH, -NH₂, -SH). Products may be active (codeine→morphine), inactive, or toxic (paracetamol→NAPQI). Key enzymes: CYP3A4 (~50% of drugs), CYP2D6, CYP2C9, CYP1A2.</p>
+<h3>Phase II — Conjugation</h3>
+<p>Glucuronidation (most common), sulfation, acetylation, methylation, glutathione conjugation. Products are highly polar, pharmacologically inactive, and readily excreted in urine or bile.</p>
+<h3>Drug Interactions</h3>
+<p>Inducers (rifampicin, phenobarbitone, carbamazepine): increase CYP expression → faster metabolism → lower drug levels. Inhibitors (fluconazole, ciprofloxacin, grapefruit): decrease CYP activity → slower metabolism → higher drug levels.</p>
+</div></div>
+<div class="panel" id="mcq"><div class="mcq">
+<h2>MCQs — Drug Metabolism</h2>
+<div class="question"><p>1. Phase II metabolism primarily involves:</p>
+<div class="opts"><label onclick="cho(this,false)">A. Oxidation via CYP450</label><label onclick="cho(this,true)" data-c>B. Conjugation reactions producing polar, water-soluble metabolites</label><label onclick="cho(this,false)">C. Hydrolysis of ester bonds</label><label onclick="cho(this,false)">D. Reduction of nitro groups</label></div></div>
+<div class="question"><p>2. CYP3A4 is clinically important because:</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. It metabolises approximately 50% of all drugs in clinical use</label><label onclick="cho(this,false)">B. It is found only in the kidney</label><label onclick="cho(this,false)">C. It is involved only in Phase II reactions</label><label onclick="cho(this,false)">D. It activates all prodrugs</label></div></div>
+<div class="question"><p>3. Rifampicin reduces plasma levels of oral contraceptives because it:</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. Induces CYP3A4, increasing contraceptive metabolism</label><label onclick="cho(this,false)">B. Inhibits intestinal absorption</label><label onclick="cho(this,false)">C. Increases renal excretion</label><label onclick="cho(this,false)">D. Displaces drug from plasma proteins</label></div></div>
+</div></div>
 <footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const W=720,H=380;let t=0,running=true;
 
-let substrates=[],products=[];
-for(let i=0;i<10;i++) substrates.push({x:50+Math.random()*150,y:80+Math.random()*240,vx:0.5,vy:(Math.random()-0.5)*0.3});
-for(let i=0;i<5;i++) products.push({x:600+Math.random()*90,y:80+Math.random()*240,vx:0.3,vy:(Math.random()-0.5)*0.3,vis:0});
-const enzymes=[{x:340,y:100,label:'CYP3A4
-(~50%)'},{x:340,y:185,label:'CYP2D6
-(~25%)'},{x:340,y:270,label:'CYP2C9
-(~15%)'}];
-function step(){t++;
-  substrates.forEach(s=>{s.x+=s.vx;s.y+=s.vy;if(s.y<70||s.y>340)s.vy*=-1;
-    if(s.x>310&&s.x<350){s.vx=0;s.vy=0;if(Math.random()<0.01){s.x=600;s.vy=(Math.random()-0.5)*0.5;s.vx=0.5;}}
-    if(s.x>680){s.x=50+Math.random()*100;s.vx=0.5;s.vy=(Math.random()-0.5)*0.3;}
-  });
+function initParticles(){
+  var arr=[];
+  for(var i=0;i<30;i++) arr.push({x:40+Math.random()*80,y:80+Math.random()*180,vx:0.8+Math.random()*0.5,vy:(Math.random()-0.5)*0.6,stage:'parent',alpha:1});
+  return arr;
 }
+var particles=initParticles();
+
 function draw(){
   ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
-  // Left zone: drug (substrate)
-  ctx.fillStyle='rgba(21,101,192,0.1)';ctx.fillRect(20,60,290,300);
-  ctx.strokeStyle='#1565C0';ctx.lineWidth=1.5;ctx.strokeRect(20,60,290,300);
-  ctx.fillStyle='#AED6F1';ctx.font='bold 11px Arial';ctx.textAlign='center';
-  ctx.fillText('Drug (Substrate)',165,78);
-  // Enzyme zone (liver)
-  ctx.fillStyle='rgba(230,81,0,0.15)';ctx.fillRect(310,60,100,300);
-  ctx.strokeStyle='#E65100';ctx.lineWidth=1.5;ctx.strokeRect(310,60,100,300);
-  ctx.fillStyle='#FFA726';ctx.font='bold 10px Arial';ctx.textAlign='center';
-  ctx.fillText('Liver',360,78);
-  enzymes.forEach(e=>{
-    ctx.fillStyle='#E65100';ctx.fillRect(315,e.y,90,55);
-    ctx.strokeStyle='#FFA726';ctx.lineWidth=1;ctx.strokeRect(315,e.y,90,55);
-    const lines=e.label.split('
-');
-    ctx.fillStyle='white';ctx.font='bold 9px Arial';ctx.textAlign='center';
-    ctx.fillText(lines[0],360,e.y+20);
-    ctx.fillStyle='#FFE082';ctx.font='8px Arial';
-    ctx.fillText(lines[1],360,e.y+33);
-    // Rotation animation
-    ctx.save();ctx.translate(360,e.y+45);ctx.rotate(t*0.03);
-    ctx.strokeStyle='#FFD54F';ctx.lineWidth=1.5;
-    for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(8*Math.cos(i*Math.PI/3),8*Math.sin(i*Math.PI/3));ctx.stroke();}
-    ctx.restore();
-  });
-  // Right zone: metabolite
-  ctx.fillStyle='rgba(46,125,50,0.1)';ctx.fillRect(420,60,280,300);
-  ctx.strokeStyle='#2E7D32';ctx.lineWidth=1.5;ctx.strokeRect(420,60,280,300);
-  ctx.fillStyle='#66BB6A';ctx.font='bold 11px Arial';ctx.textAlign='center';
-  ctx.fillText('Metabolite (more water-soluble)',560,78);
-  // Phase labels
-  ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(425,260,260,90);
-  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1;ctx.strokeRect(425,260,260,90);
-  ctx.fillStyle='#4A90D9';ctx.font='bold 10px Arial';ctx.textAlign='left';
-  ctx.fillText('Phase I: Oxidation, Reduction, Hydrolysis',432,278);
+
+  // Liver cell background
+  ctx.fillStyle='rgba(139,27,0,0.18)';
+  ctx.beginPath();ctx.ellipse(380,200,310,160,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#922B21';ctx.lineWidth=2;
+  ctx.beginPath();ctx.ellipse(380,200,310,160,0,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#E74C3C';ctx.font='bold 11px Arial';ctx.textAlign='center';
+  ctx.fillText('Hepatocyte',200,80);
+
+  // Phase I box
+  ctx.fillStyle='rgba(41,128,185,0.3)';ctx.fillRect(180,130,155,100);
+  ctx.strokeStyle='#3498DB';ctx.lineWidth=2;ctx.strokeRect(180,130,155,100);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('Phase I',257,148);
   ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
-  ctx.fillText('→ Introduces polar group (-OH, -NH₂)',432,295);
-  ctx.fillStyle='#4A90D9';ctx.font='bold 10px Arial';
-  ctx.fillText('Phase II: Conjugation',432,315);
+  ctx.fillText('CYP450 Enzymes',257,162);
+  ctx.fillText('Oxidation / Reduction',257,175);
+  ctx.fillText('Hydrolysis',257,188);
+  ctx.fillStyle='#3498DB';ctx.font='bold 9px Arial';
+  ctx.fillText('CYP3A4, CYP2D6, CYP2C9',257,204);
+
+  // Phase II box
+  ctx.fillStyle='rgba(39,174,96,0.3)';ctx.fillRect(390,130,155,100);
+  ctx.strokeStyle='#27AE60';ctx.lineWidth=2;ctx.strokeRect(390,130,155,100);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('Phase II',467,148);
   ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
-  ctx.fillText('→ Glucuronidation, sulfation, acetylation',432,330);
-  ctx.fillText('→ Highly water-soluble, renally excreted',432,345);
-  // Molecules
-  substrates.forEach(s=>{ctx.beginPath();ctx.arc(s.x,s.y,5,0,Math.PI*2);ctx.fillStyle='#42A5F5CC';ctx.fill();});
-  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,220,50);
+  ctx.fillText('Conjugation Enzymes',467,162);
+  ctx.fillText('Glucuronidation',467,175);
+  ctx.fillText('Sulfation / Acetylation',467,188);
+  ctx.fillStyle='#27AE60';ctx.font='bold 9px Arial';
+  ctx.fillText('Polar, inactive product',467,204);
+
+  // Arrows
+  function arr(x1,y1,x2,y2,col){
+    ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+    var a=Math.atan2(y2-y1,x2-x1);
+    ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-9*Math.cos(a-0.4),y2-9*Math.sin(a-0.4));
+    ctx.lineTo(x2-9*Math.cos(a+0.4),y2-9*Math.sin(a+0.4));ctx.closePath();ctx.fill();
+  }
+  arr(120,180,180,180,'#F39C12');
+  arr(335,180,390,180,'#3498DB');
+  arr(545,180,620,180,'#27AE60');
+
+  // Labels
+  ctx.fillStyle='#F39C12';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('Parent drug',80,270);ctx.fillText('(lipophilic)',80,283);
+  ctx.fillStyle='#27AE60';
+  ctx.fillText('Conjugate',648,270);ctx.fillText('→ urine/bile',648,283);
+
+  // Particles
+  for(var i=particles.length-1;i>=0;i--){
+    var p=particles[i];
+    var col='#F39C12';
+    if(p.stage==='met1') col='#3498DB';
+    if(p.stage==='met2') col='#27AE60';
+    ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);
+    ctx.fillStyle=col;ctx.globalAlpha=p.alpha*0.85;ctx.fill();ctx.globalAlpha=1;
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.y<85||p.y>315){p.vy*=-1;}
+    if(p.stage==='parent'&&p.x>178){p.stage='met1';p.x=182;}
+    if(p.stage==='met1'&&p.x>388){p.stage='met2';p.x=392;}
+    if(p.stage==='met2'&&p.x>680){particles.splice(i,1);}
+  }
+  if(t%30===0) particles.push({x:40,y:100+Math.random()*160,vx:0.8+Math.random()*0.4,vy:(Math.random()-0.5)*0.5,stage:'parent',alpha:1});
+
+  // CYP note bottom
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,330,700,44);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='left';
+  ctx.fillText('Key CYP enzymes and interactions:',18,346);
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';
+  ctx.fillText('CYP3A4: ~50% drugs (midazolam, statins, cyclosporine)  |  CYP2D6: codeine, tamoxifen (genetic polymorphism)',18,360);
+  ctx.fillText('Inducers: rifampicin, phenobarbitone  |  Inhibitors: fluconazole, grapefruit juice, ciprofloxacin',18,372);
+
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,300,42);
   ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
-  ctx.fillText('Drug Metabolism — CYP450',18,28);
-  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Hepatic biotransformation',18,46);
+  ctx.fillText('Drug Metabolism in Hepatocyte',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Phase I (CYP450) then Phase II (Conjugation)',18,44);
 }
+function step(){t++;}
 function loop(){if(running)step();draw();requestAnimationFrame(loop);}
 loop();
-
-function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
-function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+function showTab(id){document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.tab').forEach(function(tb){tb.classList.remove('active')});document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){var opts=el.parentElement.querySelectorAll('label');opts.forEach(function(o){o.classList.remove('correct','wrong')});el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
 </script></body></html>

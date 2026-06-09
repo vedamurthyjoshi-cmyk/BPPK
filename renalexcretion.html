@@ -1,96 +1,144 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<title>Renal Excretion of Drugs – Biopharmaceutics</title>
+<title>Renal Excretion – Biopharmaceutics</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
-<h1>Renal Excretion of Drugs</h1>
+<h1>Renal Excretion — GFR, Secretion, Reabsorption</h1>
 <div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
 <div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
 <div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
-<div class="panel" id="theory"><div class="theory"><h2>Renal Excretion of Drugs</h2>
-<p>The kidney is the primary route of drug elimination for water-soluble drugs and metabolites. Three processes operate simultaneously in the nephron.</p>
-<h3>1. Glomerular Filtration</h3>
-<p>Passive, non-selective ultrafiltration through the glomerular capillary. Only free (unbound) drug is filtered — protein-bound drug is NOT filtered. GFR in healthy adults ≈ 125 mL/min. Creatinine clearance is used as a surrogate for GFR in dose adjustment.</p>
-<h3>2. Active Tubular Secretion</h3>
-<p>Active transport of drug from peritubular blood into the tubular lumen against a concentration gradient. Two transporter systems: organic acid transporter (OAT) for acidic drugs (penicillin, furosemide), organic cation transporter (OCT) for basic drugs (metformin, cimetidine). Can be saturated at high doses — zero order at saturation.</p>
-<h3>3. Tubular Reabsorption</h3>
-<p>Passive back-diffusion of un-ionised, lipophilic drug from tubular lumen back into blood. Urine pH manipulation changes ionisation → affects reabsorption. Alkaline urine (NaHCO₃): traps acidic drugs in urine → increased excretion. Acidic urine (NH₄Cl): traps basic drugs → increased excretion. Used clinically in drug overdose management.</p></div></div>
-<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Renal Excretion</h2>
+<div class="panel" id="theory"><div class="theory">
+<h2>Renal Drug Excretion</h2>
+<p>Renal excretion involves three processes: glomerular filtration (passive), tubular secretion (active), and tubular reabsorption (passive). Net renal clearance = filtration + secretion − reabsorption.</p>
+<h3>Glomerular Filtration</h3>
+<p>GFR ~125 mL/min in a healthy adult. Only the free (unbound) fraction of drug is filtered. CL(filtration) = GFR × fu. Reduced in renal failure — dose adjustment required for aminoglycosides, vancomycin, digoxin, metformin.</p>
+<h3>Tubular Secretion</h3>
+<p>Active transport by OAT (organic anion transporters) and OCT (cation transporters) in proximal tubule. Can secrete protein-bound drug. Saturable — drug interactions (probenecid blocks penicillin secretion). CLr > GFR×fu indicates active secretion.</p>
+<h3>Tubular Reabsorption</h3>
+<p>Passive back-diffusion of lipophilic, non-ionised drug from tubular lumen into blood. Urine pH manipulation: alkalinising urine (NaHCO₃) traps weak acids, increasing excretion. Used in salicylate and phenobarbitone overdose.</p>
+</div></div>
+<div class="panel" id="mcq"><div class="mcq">
+<h2>MCQs — Renal Excretion</h2>
 <div class="question"><p>1. Only the _____ fraction of drug is filtered at the glomerulus:</p>
-<div class="opts"><label onclick="cho(this,true)" data-c>A. Free (unbound)</label><label onclick="cho(this,false)">B. Protein-bound</label><label onclick="cho(this,false)">C. Total plasma concentration</label><label onclick="cho(this,false)">D. Lipid-soluble fraction</label></div></div>
-<div class="question"><p>2. To enhance elimination of aspirin (weak acid) in overdose, urine is made:</p>
-<div class="opts"><label onclick="cho(this,false)">A. Acidic — to increase reabsorption</label><label onclick="cho(this,true)" data-c>B. Alkaline (with NaHCO₃) — to trap ionised aspirin in urine</label><label onclick="cho(this,false)">C. Neutral pH</label><label onclick="cho(this,false)">D. pH does not affect aspirin excretion</label></div></div>
-<div class="question"><p>3. Probenecid reduces penicillin excretion by:</p>
-<div class="opts"><label onclick="cho(this,false)">A. Increasing glomerular filtration</label><label onclick="cho(this,false)">B. Alkalinising urine</label><label onclick="cho(this,true)" data-c>C. Competing for the same organic acid tubular secretion transporter</label><label onclick="cho(this,false)">D. Inhibiting CYP450</label></div></div></div></div>
+<div class="opts"><label onclick="cho(this,false)">A. Protein-bound fraction</label><label onclick="cho(this,true)" data-c>B. Free (unbound) fraction</label><label onclick="cho(this,false)">C. Ionised fraction</label><label onclick="cho(this,false)">D. Total drug</label></div></div>
+<div class="question"><p>2. Probenecid increases plasma levels of penicillin by:</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. Inhibiting active tubular secretion of penicillin by OAT transporters</label><label onclick="cho(this,false)">B. Increasing GFR</label><label onclick="cho(this,false)">C. Reducing plasma protein binding</label><label onclick="cho(this,false)">D. Inhibiting penicillin metabolism</label></div></div>
+<div class="question"><p>3. In salicylate overdose, NaHCO₃ is given to:</p>
+<div class="opts"><label onclick="cho(this,false)">A. Neutralise stomach acid</label><label onclick="cho(this,true)" data-c>B. Alkalinise urine, ionising salicylate and trapping it for excretion</label><label onclick="cho(this,false)">C. Increase GFR</label><label onclick="cho(this,false)">D. Bind salicylate in plasma</label></div></div>
+</div></div>
 <footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const W=720,H=380;let t=0,running=true;
 
-let particles=[];
-for(let i=0;i<25;i++) particles.push({x:60+Math.random()*120,y:50+Math.random()*300,speed:0.8+Math.random()*0.5,type:['free','bound','secreted'][Math.floor(Math.random()*3)]});
-function step(){t++;particles.forEach(p=>{p.y+=p.speed;if(p.y>360){p.y=50;p.x=60+Math.random()*120;}});}
+// Drug particles flowing through nephron segments
+var drugs=[];
+function spawnDrug(){
+  drugs.push({prog:0,speed:0.004+Math.random()*0.003,lost:false,col:'#F1C40F'});
+}
+for(var i=0;i<12;i++) drugs.push({prog:Math.random(),speed:0.004+Math.random()*0.003,lost:false,col:'#F1C40F'});
+
+// Nephron path waypoints
+var path=[
+  {x:130,y:80},   // 0 afferent arteriole
+  {x:200,y:80},   // 1 glomerulus entry
+  {x:200,y:140},  // 2 glomerulus
+  {x:280,y:140},  // 3 PCT start
+  {x:380,y:120},  // 4 PCT middle (secretion zone)
+  {x:460,y:140},  // 5 PCT end
+  {x:500,y:210},  // 6 descending loop
+  {x:480,y:290},  // 7 loop bottom
+  {x:420,y:290},  // 8 ascending
+  {x:360,y:220},  // 9 DCT
+  {x:280,y:240},  // 10 DCT
+  {x:220,y:300},  // 11 collecting duct
+  {x:220,y=350},  // 12 urine
+];
+// Fix: reassign properly
+var waypoints=[
+  [130,80],[200,80],[200,140],[280,140],[380,120],[460,140],
+  [500,210],[480,290],[420,290],[360,220],[280,240],[220,300],[220,355]
+];
+
+function getPos(prog){
+  var total=waypoints.length-1;
+  var seg=prog*total;
+  var i=Math.min(Math.floor(seg),total-1);
+  var f=seg-i;
+  var a=waypoints[i],b=waypoints[Math.min(i+1,total)];
+  return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f];
+}
+
 function draw(){
   ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
-  // Nephron diagram
+
+  // Draw nephron tube
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=8;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.beginPath();
+  waypoints.forEach(function(p,i){i===0?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1]);});
+  ctx.globalAlpha=0.25;ctx.stroke();ctx.globalAlpha=1;
+
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=3;ctx.setLineDash([]);
+  ctx.beginPath();
+  waypoints.forEach(function(p,i){i===0?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1]);});
+  ctx.stroke();
+
   // Glomerulus
-  ctx.beginPath();ctx.arc(200,100,40,0,Math.PI*2);
-  ctx.fillStyle='rgba(183,28,28,0.3)';ctx.fill();
-  ctx.strokeStyle='#EF5350';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle='#EF5350';ctx.font='bold 10px Arial';ctx.textAlign='center';
-  ctx.fillText('Glomerulus',200,97);ctx.fillStyle='#AED6F1';ctx.font='9px Arial';ctx.fillText('(Filtration)',200,112);
-  // Proximal tubule
-  ctx.strokeStyle='#1976D2';ctx.lineWidth=12;ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(230,120);ctx.bezierCurveTo(320,100,350,180,280,200);ctx.stroke();
-  ctx.fillStyle='#42A5F5';ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText('Proximal Tubule',340,145);
-  ctx.fillStyle='#AED6F1';ctx.font='8px Arial';ctx.fillText('(Secretion)',340,158);
-  // Loop of Henle
-  ctx.strokeStyle='#7B1FA2';ctx.lineWidth=12;
-  ctx.beginPath();ctx.moveTo(280,210);ctx.bezierCurveTo(220,260,180,300,220,330);ctx.stroke();
-  ctx.fillStyle='#CE93D8';ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText('Loop of Henle',160,295);
-  // Distal tubule
-  ctx.strokeStyle='#2E7D32';ctx.lineWidth=12;
-  ctx.beginPath();ctx.moveTo(225,330);ctx.bezierCurveTo(300,340,360,300,380,250);ctx.stroke();
-  ctx.fillStyle='#66BB6A';ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText('Distal Tubule',420,290);
-  ctx.fillStyle='#AED6F1';ctx.font='8px Arial';ctx.fillText('(Reabsorption)',420,303);
-  // Collecting duct → urine
-  ctx.strokeStyle='#F57F17';ctx.lineWidth=12;
-  ctx.beginPath();ctx.moveTo(380,250);ctx.lineTo(480,250);ctx.lineTo(480,350);ctx.stroke();
-  ctx.fillStyle='#FFD54F';ctx.font='bold 10px Arial';ctx.textAlign='center';
-  ctx.fillText('→ Urine',520,260);
+  ctx.fillStyle='rgba(231,76,60,0.3)';ctx.beginPath();ctx.arc(200,140,30,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#E74C3C';ctx.lineWidth=2;ctx.beginPath();ctx.arc(200,140,30,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#E74C3C';ctx.font='bold 9px Arial';ctx.textAlign='center';
+  ctx.fillText('Glomerulus',200,136);ctx.fillText('GFR 125 mL/min',200,148);
 
-  // Three processes panel on right
-  const procs=[
-    {y:80, title:'1. Glomerular Filtration', col:'#EF5350', text:'Passive, non-selective
-Filters free drug only
-GFR = 125 mL/min'},
-    {y:175,title:'2. Active Tubular Secretion',col:'#42A5F5',text:'Active, against gradient
-Organic acid/base transporters
-Can be saturated'},
-    {y:270,title:'3. Tubular Reabsorption',col:'#66BB6A',text:'Passive, un-ionised drug
-Lipophilic drugs reabsorbed
-pH affects ionisation'},
-  ];
-  procs.forEach(p=>{
-    ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(530,p.y,175,80);
-    ctx.strokeStyle=p.col;ctx.lineWidth=1;ctx.strokeRect(530,p.y,175,80);
-    ctx.fillStyle=p.col;ctx.font='bold 9px Arial';ctx.textAlign='left';
-    ctx.fillText(p.title,537,p.y+16);
-    p.text.split('
-').forEach((line,i)=>{
-      ctx.fillStyle='#AED6F1';ctx.font='8px Arial';ctx.fillText(line,537,p.y+32+i*13);
-    });
-  });
+  // Section labels
+  ctx.fillStyle='#3498DB';ctx.font='bold 9px Arial';ctx.textAlign='center';
+  ctx.fillText('Proximal Tubule',370,100);ctx.fillText('(Active Secretion)',370,112);
+  ctx.fillStyle='#9B59B6';ctx.fillText('Loop of Henle',510,250);
+  ctx.fillStyle='#27AE60';ctx.fillText('Distal Tubule',310,210);ctx.fillText('(Reabsorption)',310,222);
+  ctx.fillStyle='#F39C12';ctx.fillText('Collecting Duct',185,330);
+  ctx.fillStyle='#E67E22';ctx.fillText('URINE',185,368);
 
-  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,220,50);
-  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
-  ctx.fillText('Renal Drug Excretion',18,28);
-  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Three nephron processes',18,46);
-  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(10,355,700,20);
-  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.textAlign='center';
-  ctx.fillText('CLrenal = CLfiltration + CLsecretion − CLreabsorption',360,368);
+  // Secretion indicator (arrow from blood into tubule at PCT)
+  ctx.strokeStyle='#E74C3C';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(380,60);ctx.lineTo(380,112);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#E74C3C';ctx.font='8px Arial';ctx.textAlign='center';
+  ctx.fillText('Secretion',380,54);ctx.fillText('(OAT/OCT)',380,44);
+
+  // Reabsorption indicator (arrow from tubule back to blood)
+  ctx.strokeStyle='#27AE60';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(310,240);ctx.lineTo(370,240);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#27AE60';ctx.font='8px Arial';ctx.textAlign='left';
+  ctx.fillText('Reabsorption',375,244);
+
+  // Formula panel right
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(555,50,155,220);
+  ctx.strokeStyle='#4A90D9';ctx.lineWidth=1;ctx.strokeRect(555,50,155,220);
+  ctx.fillStyle='#4A90D9';ctx.font='bold 9px Arial';ctx.textAlign='center';
+  ctx.fillText('Renal Clearance',633,68);
+  ctx.fillStyle='#AED6F1';ctx.font='9px Arial';ctx.textAlign='left';
+  var lines=['CLr = GFR·fu','     + CL(sec)','     − CL(reabs)','','GFR = 125 mL/min','fu = free fraction','','CLr > GFR·fu:','  secretion','','CLr < GFR·fu:','  reabsorption','','CLr = GFR·fu:','  neither'];
+  lines.forEach(function(l,i){ctx.fillText(l,562,84+i*13);});
+
+  // Animate drug particles
+  if(t%40===0) spawnDrug();
+  for(var i=drugs.length-1;i>=0;i--){
+    var d=drugs[i];
+    // Some particles get secreted in (appear at PCT)
+    // Some get reabsorbed out (disappear at DCT)
+    var pos=getPos(d.prog);
+    ctx.beginPath();ctx.arc(pos[0],pos[1],5,0,Math.PI*2);
+    ctx.fillStyle=d.col;ctx.globalAlpha=0.85;ctx.fill();ctx.globalAlpha=1;
+    d.prog+=d.speed;
+    if(d.prog>1) drugs.splice(i,1);
+  }
+
+  // Info
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,310,42);
+  ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.textAlign='left';
+  ctx.fillText('Renal Excretion of Drugs',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Filtration + Secretion - Reabsorption = Net CLr',18,44);
 }
+function step(){t++;}
 function loop(){if(running)step();draw();requestAnimationFrame(loop);}
 loop();
-
-function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
-function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+function showTab(id){document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.tab').forEach(function(tb){tb.classList.remove('active')});document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){var opts=el.parentElement.querySelectorAll('label');opts.forEach(function(o){o.classList.remove('correct','wrong')});el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
 </script></body></html>

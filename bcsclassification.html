@@ -1,91 +1,131 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>BCS Classification</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
-<h1>BCS — Biopharmaceutics Classification System</h1>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>BCS Classification – Biopharmaceutics</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:4px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
+<h1>BCS Classification System — 4 Classes</h1>
 <div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
-<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
-<div class="panel" id="theory"><div class="theory"><h2>BCS Classification System</h2><p>The BCS classifies drugs into 4 classes based on aqueous solubility and intestinal permeability. Proposed by Amidon et al. (1995), it predicts oral absorption and guides formulation strategy.</p><h3>Class I — High Solubility, High Permeability</h3><p>Well absorbed. Bioavailability is formulation-independent. Eligible for biowaiver. Examples: metformin, propranolol.</p><h3>Class II — Low Solubility, High Permeability</h3><p>Absorption is dissolution rate-limited. Nanoparticles, solid dispersions used to improve BA. Examples: ibuprofen, carbamazepine, griseofulvin.</p><h3>Class III — High Solubility, Low Permeability</h3><p>Absorption is permeability-limited. Good dissolution but poor membrane crossing. Examples: ranitidine, atenolol, acyclovir.</p><h3>Class IV — Low Solubility, Low Permeability</h3><p>Poor oral bioavailability. Problematic class. Examples: furosemide, ritonavir.</p></div></div>
-<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — BCS Classification</h2><div class="question"><p>1. BCS Class II drugs have:</p><div class="opts"><label onclick="cho(this,false)">A. High solubility, High permeability</label>
-<label onclick="cho(this,true)" data-c>B. Low solubility, High permeability</label>
-<label onclick="cho(this,false)">C. High solubility, Low permeability</label>
-<label onclick="cho(this,false)">D. Low solubility, Low permeability</label>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls">
+  <button onclick="highlight=0">Class I</button>
+  <button onclick="highlight=1">Class II</button>
+  <button onclick="highlight=2">Class III</button>
+  <button onclick="highlight=3">Class IV</button>
 </div></div>
-<div class="question"><p>2. A BCS Class I drug is eligible for biowaiver because:</p><div class="opts"><label onclick="cho(this,false)">A. It has poor absorption</label>
-<label onclick="cho(this,true)" data-c>B. Its bioavailability is formulation-independent; dissolution is not rate-limiting</label>
-<label onclick="cho(this,false)">C. It is always a prodrug</label>
-<label onclick="cho(this,false)">D. It has zero first-pass effect</label>
+<div class="panel" id="theory"><div class="theory">
+<h2>Biopharmaceutics Classification System (BCS)</h2>
+<p>BCS classifies drugs by aqueous solubility and intestinal permeability. Proposed by Amidon et al. (1995). Used by FDA, EMA, WHO to grant dissolution biowaivers for generic drugs.</p>
+<h3>Class I — High Solubility, High Permeability</h3>
+<p>Well-absorbed. Rate-limiting step is gastric emptying. Biowaiver possible if rapid dissolution (&gt;85% in 15 min). Examples: metoprolol, paracetamol, verapamil, propranolol.</p>
+<h3>Class II — Low Solubility, High Permeability</h3>
+<p>Dissolution-limited absorption. Formulation critical — particle size reduction, solid dispersions, lipid formulations. ~70% of new chemical entities are Class II. Examples: ibuprofen, phenytoin, griseofulvin, ketoconazole.</p>
+<h3>Class III — High Solubility, Low Permeability</h3>
+<p>Membrane permeation rate-limiting. P-gp efflux may contribute. Biowaiver possible if formulation has no permeation-altering excipients. Examples: atenolol, cimetidine, acyclovir, ranitidine.</p>
+<h3>Class IV — Low Solubility, Low Permeability</h3>
+<p>Both barriers present. Variable, poor bioavailability. Difficult to formulate. Examples: furosemide, hydrochlorothiazide, paclitaxel (taxol).</p>
 </div></div>
-<div class="question"><p>3. Griseofulvin is a classic BCS Class II drug. The primary formulation strategy would be:</p><div class="opts"><label onclick="cho(this,false)">A. Enteric coating</label>
-<label onclick="cho(this,false)">B. Use of efflux transporter inhibitors</label>
-<label onclick="cho(this,true)" data-c>C. Particle size reduction / micronisation / solid dispersion to improve dissolution</label>
-<label onclick="cho(this,false)">D. Increase dose only</label>
-</div></div>
+<div class="panel" id="mcq"><div class="mcq">
+<h2>MCQs — BCS Classification</h2>
+<div class="question"><p>1. Ibuprofen is a BCS Class II drug. The rate-limiting step for its absorption is:</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. Dissolution in GI fluids</label><label onclick="cho(this,false)">B. Membrane permeation</label><label onclick="cho(this,false)">C. First-pass metabolism</label><label onclick="cho(this,false)">D. Gastric emptying</label></div></div>
+<div class="question"><p>2. A BCS biowaiver for a Class I drug requires dissolution of:</p>
+<div class="opts"><label onclick="cho(this,false)">A. &gt;50% in 60 minutes</label><label onclick="cho(this,false)">B. &gt;75% in 45 minutes</label><label onclick="cho(this,true)" data-c>C. &gt;85% in 15 minutes in pH 1.2, 4.5, and 6.8</label><label onclick="cho(this,false)">D. &gt;90% in 30 minutes</label></div></div>
+<div class="question"><p>3. Which BCS class is most challenging to formulate for adequate bioavailability?</p>
+<div class="opts"><label onclick="cho(this,false)">A. Class I</label><label onclick="cho(this,false)">B. Class II</label><label onclick="cho(this,false)">C. Class III</label><label onclick="cho(this,true)" data-c>D. Class IV</label></div></div>
 </div></div>
 <footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const W=720,H=380;let t=0,running=true;
+var highlight=0;
+
+var classes=[
+  {num:'I',  solHigh:true,  perHigh:true,  col:'#27AE60',
+   line1:'High Solubility',  line2:'High Permeability',
+   d1:'Metoprolol',d2:'Paracetamol',d3:'Verapamil',
+   ba:'Excellent BA',waiver:'Biowaiver eligible'},
+  {num:'II', solHigh:false, perHigh:true,  col:'#E67E22',
+   line1:'Low Solubility',   line2:'High Permeability',
+   d1:'Ibuprofen',d2:'Phenytoin',d3:'Griseofulvin',
+   ba:'Dissolution-limited', waiver:'Formulation critical'},
+  {num:'III',solHigh:true,  perHigh:false, col:'#3498DB',
+   line1:'High Solubility',  line2:'Low Permeability',
+   d1:'Atenolol',d2:'Cimetidine',d3:'Acyclovir',
+   ba:'Permeation-limited',  waiver:'Biowaiver possible'},
+  {num:'IV', solHigh:false, perHigh:false, col:'#E74C3C',
+   line1:'Low Solubility',   line2:'Low Permeability',
+   d1:'Furosemide',d2:'Taxol',d3:'HCTZ',
+   ba:'Poor BA',             waiver:'Very challenging'},
+];
 
 function draw(){
   ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
-  const cx=360,cy=200,aw=280,ah=240;
-  // Axes
-  ctx.strokeStyle='#4A90D9';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(cx-aw/2,cy+ah/2);ctx.lineTo(cx+aw/2,cy+ah/2);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx-aw/2,cy-ah/2);ctx.lineTo(cx-aw/2,cy+ah/2);ctx.stroke();
-  // Labels
-  ctx.fillStyle='#AED6F1';ctx.font='bold 11px Arial';ctx.textAlign='center';
-  ctx.fillText('SOLUBILITY →',cx,cy+ah/2+22);
-  ctx.save();ctx.translate(cx-aw/2-28,cy);ctx.rotate(-Math.PI/2);
-  ctx.fillText('PERMEABILITY →',0,0);ctx.restore();
-  ctx.fillStyle='#ccc';ctx.font='10px Arial';
-  ctx.fillText('Low',cx-aw/2+20,cy+ah/2+12);ctx.fillText('High',cx+aw/2-20,cy+ah/2+12);
-  ctx.fillText('Low',cx-aw/2-5,cy+ah/2-15);ctx.fillText('High',cx-aw/2-5,cy-ah/2+15);
 
-  // Four quadrants
-  const classes=[
-    {x:cx,y:cy-ah/2,w:aw/2,h:ah/2,col:'#27AE60',num:'I',desc:'High Sol
-High Perm',drugs:'Propranolol
-Metformin',strategy:'Biowaiver eligible'},
-    {x:cx-aw/2,y:cy-ah/2,w:aw/2,h:ah/2,col:'#E67E22',num:'III',desc:'High Sol
-Low Perm',drugs:'Atenolol
-Ranitidine',strategy:'Permeation enhancers'},
-    {x:cx,y:cy,w:aw/2,h:ah/2,col:'#E74C3C',num:'II',desc:'Low Sol
-High Perm',drugs:'Ibuprofen
-Griseofulvin',strategy:'Particle size↓, SDD'},
-    {x:cx-aw/2,y:cy,w:aw/2,h:ah/2,col:'#8E44AD',num:'IV',desc:'Low Sol
-Low Perm',drugs:'Furosemide
-Ritonavir',strategy:'Very challenging'},
-  ];
-  const pulse=0.5+Math.sin(t*0.05)*0.3;
-  classes.forEach(c=>{
-    ctx.fillStyle=c.col+'33';ctx.fillRect(c.x,c.y,c.w,c.h);
-    ctx.strokeStyle=c.col;ctx.lineWidth=2;ctx.strokeRect(c.x,c.y,c.w,c.h);
-    ctx.fillStyle=c.col;ctx.font='bold 22px Arial';ctx.textAlign='center';
-    ctx.fillText('Class '+c.num,c.x+c.w/2,c.y+30);
-    ctx.fillStyle='white';ctx.font='9px Arial';
-    c.desc.split('
-').forEach((l,i)=>ctx.fillText(l,c.x+c.w/2,c.y+48+i*12));
-    ctx.fillStyle='#AED6F1';ctx.font='8px Arial';
-    c.drugs.split('
-').forEach((l,i)=>ctx.fillText(l,c.x+c.w/2,c.y+80+i*11));
-    ctx.fillStyle=c.col;ctx.font='8px Arial';
-    ctx.fillText(c.strategy,c.x+c.w/2,c.y+c.h-10);
+  // Auto-cycle highlight
+  var cycleHL=Math.floor(t/90)%4;
+  var hl=(running?cycleHL:highlight);
+
+  // Grid layout: 2x2
+  var positions=[[55,40],[390,40],[55,210],[390,210]];
+  var qw=270,qh=155;
+
+  classes.forEach(function(c,i){
+    var px=positions[i][0],py=positions[i][1];
+    var active=(i===hl);
+    // Box
+    ctx.fillStyle=c.col+(active?'44':'22');
+    ctx.fillRect(px,py,qw,qh);
+    ctx.strokeStyle=c.col;
+    ctx.lineWidth=active?3:1.5;
+    ctx.strokeRect(px,py,qw,qh);
+
+    // Class number
+    ctx.fillStyle=c.col;ctx.font='bold 20px Arial';ctx.textAlign='left';
+    ctx.fillText('Class '+c.num,px+10,py+24);
+
+    // Solubility / Permeability
+    ctx.fillStyle='white';ctx.font='bold 10px Arial';
+    ctx.fillText(c.line1,px+10,py+42);
+    ctx.fillText(c.line2,px+10,py+56);
+
+    // Drug examples
+    ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+    ctx.fillText(c.d1+'  '+c.d2,px+10,py+74);
+    ctx.fillText(c.d3,px+10,py+88);
+
+    // BA and waiver
+    ctx.fillStyle=c.col;ctx.font='bold 10px Arial';
+    ctx.fillText(c.ba,px+10,py+108);
+    ctx.fillStyle='#F1C40F';ctx.font='9px Arial';
+    ctx.fillText(c.waiver,px+10,py+122);
+
+    // Pulse if active
+    if(active){
+      var pulse=0.5+0.5*Math.sin(t*0.12);
+      ctx.strokeStyle=c.col;ctx.lineWidth=2+pulse*2;
+      ctx.strokeRect(px-2,py-2,qw+4,qh+4);
+    }
   });
 
-  // Centre cross
-  ctx.strokeStyle='rgba(74,144,217,0.5)';ctx.lineWidth=2;ctx.setLineDash([5,5]);
-  ctx.beginPath();ctx.moveTo(cx,cy-ah/2);ctx.lineTo(cx,cy+ah/2);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx-aw/2,cy);ctx.lineTo(cx+aw/2,cy);ctx.stroke();
+  // Axis dividers
+  ctx.strokeStyle='rgba(74,144,217,0.35)';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(360,30);ctx.lineTo(360,375);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(40,200);ctx.lineTo(680,200);ctx.stroke();
   ctx.setLineDash([]);
 
-  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,240,38);
-  ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
-  ctx.fillText('BCS Classification System',18,27);
-  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Solubility × Permeability grid',18,42);
+  // Axis labels
+  ctx.fillStyle='#4A90D9';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('HIGH SOLUBILITY',197,385);
+  ctx.fillText('LOW SOLUBILITY',542,385);
+  ctx.save();ctx.translate(18,130);ctx.rotate(-Math.PI/2);ctx.fillText('HIGH PERMEABILITY',0,0);ctx.restore();
+  ctx.save();ctx.translate(18,300);ctx.rotate(-Math.PI/2);ctx.fillText('LOW PERMEABILITY',0,0);ctx.restore();
+
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,8,360,20);
+  ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='left';
+  ctx.fillText('BCS: Solubility x Permeability grid — FDA Biowaiver framework',15,22);
 }
 function step(){t++;}
 function loop(){if(running)step();draw();requestAnimationFrame(loop);}
 loop();
-function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
-function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+function showTab(id){document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.tab').forEach(function(tb){tb.classList.remove('active')});document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){var opts=el.parentElement.querySelectorAll('label');opts.forEach(function(o){o.classList.remove('correct','wrong')});el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
 </script></body></html>

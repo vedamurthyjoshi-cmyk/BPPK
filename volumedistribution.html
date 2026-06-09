@@ -1,74 +1,103 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Volume of Distribution – Biopharmaceutics</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Volume of Distribution – Biopharmaceutics</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d1a;color:#fff;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center}h1{font-size:1.1rem;padding:8px;color:#AED6F1;text-align:center}.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:6px 18px;border-radius:6px 6px 0 0;cursor:pointer;background:#1a1a2e;border:1px solid #4A90D9;color:#AED6F1;font-size:0.85rem}.tab.active{background:#4A90D9;color:#fff}.panel{display:none;width:720px}.panel.active{display:block}canvas{display:block;background:#1a1a2e;border-radius:0 8px 8px 8px;border:1px solid #4A90D9}.controls{display:flex;gap:8px;margin:6px 0;justify-content:center}button{padding:5px 16px;border-radius:5px;border:none;background:#4A90D9;color:#fff;cursor:pointer;font-size:0.82rem}button:hover{background:#1F618D}.theory{background:#1a1a2e;border-radius:8px;padding:16px;font-size:0.88rem;line-height:1.6;border:1px solid #4A90D9;width:720px}.theory h2{color:#4A90D9;margin-bottom:8px}.theory h3{color:#AED6F1;margin-top:10px;margin-bottom:4px}.mcq{background:#1a1a2e;border-radius:8px;padding:16px;width:720px;border:1px solid #4A90D9}.mcq h2{color:#4A90D9;margin-bottom:10px}.question{margin-bottom:14px}.question p{margin-bottom:6px;font-size:0.88rem}.opts label{display:block;margin:3px 0;cursor:pointer;font-size:0.85rem;padding:3px 6px;border-radius:4px}.opts label:hover{background:#1F618D}.opts label.correct{background:#1e7e34;color:#fff}.opts label.wrong{background:#721c24;color:#fff}footer{font-size:0.75rem;color:#555;margin:8px 0 4px}</style></head><body>
-<h1>Volume of Distribution — Vd Concept and Calculation</h1>
+<h1>Volume of Distribution — Where Does the Drug Go?</h1>
 <div class="tabs"><div class="tab active" onclick="showTab('anim')">Animation</div><div class="tab" onclick="showTab('theory')">Theory</div><div class="tab" onclick="showTab('mcq')">MCQs</div></div>
-<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas><div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
-<div class="panel" id="theory"><div class="theory"><h2>Volume of Distribution (Vd)</h2><p>Volume of Distribution (Vd) is a proportionality constant that relates the total amount of drug in the body to the plasma concentration. It is an apparent (not real) volume. Vd = Dose / Cp(0).</p><h3>Interpretation</h3><p>Small Vd (3–5 L): drug stays in plasma — highly protein-bound, hydrophilic (e.g. heparin, warfarin). Moderate Vd (15–40 L): distributes into body water. Large Vd (&gt;100 L): extensive tissue distribution — lipophilic drugs (e.g. chloroquine Vd = 250–300 L/kg, amiodarone Vd = 60 L/kg).</p><h3>Clinical Significance</h3><p>Large Vd: dialysis is ineffective for overdose (drug is deep in tissues). Small Vd: responsive to dialysis. Vd determines the loading dose: DL = Vd × Css(target).</p></div></div>
-<div class="panel" id="mcq"><div class="mcq"><h2>MCQs — Volume of Distribution</h2><div class="question"><p>1. A drug has Cp(0) = 10 mg/L after IV bolus of 500 mg. What is the Vd?</p><div class="opts"><label onclick="cho(this,false)">A. 5 L</label>
-<label onclick="cho(this,true)" data-c>B. 50 L</label>
-<label onclick="cho(this,false)">C. 500 L</label>
-<label onclick="cho(this,false)">D. 0.05 L</label>
+<div class="panel active" id="anim"><canvas id="cv" width="720" height="380"></canvas>
+<div class="controls"><button onclick="running=!running;this.textContent=running?'Pause':'Play'">Pause</button><button onclick="t=0">Reset</button></div></div>
+<div class="panel" id="theory"><div class="theory">
+<h2>Volume of Distribution (Vd)</h2>
+<p>Vd is an apparent volume relating the total amount of drug in the body to the plasma concentration. Vd = Dose / Cp₀. It is not a real physiological volume.</p>
+<h3>Interpretation by Size</h3>
+<p>Small Vd (~5 L): Drug confined to plasma — high molecular weight, highly protein-bound (heparin, warfarin). Moderate Vd (~14–42 L): Distributes into body water (aspirin, theophylline). Large Vd (>100 L): Extensive tissue binding — lipophilic drugs (chloroquine ~250 L/kg, digoxin ~600 L, amiodarone ~5000 L).</p>
+<h3>Key Relationship</h3>
+<p>t½ = 0.693 × Vd / CL. Large Vd → long half-life. Loading dose = Css × Vd. Large Vd drugs cannot be removed by dialysis.</p>
+<h3>Factors Determining Vd</h3>
+<p>Lipophilicity (↑lipophilicity → ↑Vd). Plasma protein binding (↑PPB → ↓Vd). Tissue binding (↑tissue binding → ↑Vd). Ionisation at pH 7.4.</p>
 </div></div>
-<div class="question"><p>2. A large Vd (&gt;100 L) indicates the drug is:</p><div class="opts"><label onclick="cho(this,false)">A. Confined to the plasma compartment</label>
-<label onclick="cho(this,false)">B. Highly water soluble</label>
-<label onclick="cho(this,true)" data-c>C. Extensively distributed into tissues</label>
-<label onclick="cho(this,false)">D. Not absorbed orally</label>
-</div></div>
-<div class="question"><p>3. Loading dose is calculated as:</p><div class="opts"><label onclick="cho(this,false)">A. CL × t½</label>
-<label onclick="cho(this,true)" data-c>B. Vd × Target Css</label>
-<label onclick="cho(this,false)">C. AUC × Ke</label>
-<label onclick="cho(this,false)">D. Cmax × t½</label>
-</div></div>
+<div class="panel" id="mcq"><div class="mcq">
+<h2>MCQs — Volume of Distribution</h2>
+<div class="question"><p>1. A drug has Dose = 500 mg and Cp₀ = 10 mg/L. Its Vd is:</p>
+<div class="opts"><label onclick="cho(this,false)">A. 10 L</label><label onclick="cho(this,true)" data-c>B. 50 L</label><label onclick="cho(this,false)">C. 5 L</label><label onclick="cho(this,false)">D. 500 L</label></div></div>
+<div class="question"><p>2. Heparin has a very small Vd (~0.06 L/kg). This means:</p>
+<div class="opts"><label onclick="cho(this,true)" data-c>A. It is confined to plasma and cannot be dialysed away easily from tissues</label><label onclick="cho(this,false)">B. It distributes extensively into fat</label><label onclick="cho(this,false)">C. It crosses the blood-brain barrier</label><label onclick="cho(this,false)">D. It has poor protein binding</label></div></div>
+<div class="question"><p>3. Which drug would have the largest volume of distribution?</p>
+<div class="opts"><label onclick="cho(this,false)">A. Heparin (large polyanion)</label><label onclick="cho(this,false)">B. Gentamicin (hydrophilic aminoglycoside)</label><label onclick="cho(this,true)" data-c>C. Amiodarone (highly lipophilic, extensive tissue binding)</label><label onclick="cho(this,false)">D. Warfarin (99% protein bound)</label></div></div>
 </div></div>
 <footer>© 2026 Biopharmaceutics & Pharmacokinetics BP602T</footer>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const W=720,H=380;let t=0,running=true;
 
+const scenarios=[
+  {x:50,  title:'Small Vd',vd:'~5 L',  sub:'Confined to plasma', plasmaFill:0.9,tissueFill:0.05,col:'#3498DB',drug:'Heparin'},
+  {x:270, title:'Moderate Vd',vd:'~30 L', sub:'Body water',      plasmaFill:0.45,tissueFill:0.45,col:'#2ECC71',drug:'Theophylline'},
+  {x:490, title:'Large Vd',vd:'>300 L', sub:'Deep in tissues',   plasmaFill:0.05,tissueFill:0.95,col:'#E74C3C',drug:'Chloroquine'},
+];
+
 function draw(){
   ctx.clearRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
-  // Three containers showing different Vd scenarios
-  const scenarios=[
-    {x:60,label:'Small Vd
-~5 L',sub:'Stays in plasma',plasmaFill:0.9,tissueFill:0.05,col:'#3498DB',drug:'Heparin'},
-    {x:270,label:'Moderate Vd
-~30 L',sub:'Body water',plasmaFill:0.4,tissueFill:0.4,col:'#2ECC71',drug:'Theophylline'},
-    {x:480,label:'Large Vd
->200 L',sub:'Deep in tissues',plasmaFill:0.05,tissueFill:0.95,col:'#E74C3C',drug:'Chloroquine'},
-  ];
-  scenarios.forEach(s=>{
-    const w=160,ph=80,th=180;
+
+  scenarios.forEach(function(s){
+    var w=180,ph=70,th=180,tx=s.x,ty=100;
     // Tissue compartment
-    ctx.fillStyle=s.col+'33';ctx.fillRect(s.x,120,w,th);
-    ctx.strokeStyle=s.col;ctx.lineWidth=2;ctx.strokeRect(s.x,120,w,th);
-    // Drug in tissue
-    ctx.fillStyle=s.col+'88';ctx.fillRect(s.x+2,120+th*(1-s.tissueFill),w-4,th*s.tissueFill);
-    ctx.fillStyle='white';ctx.font='10px Arial';ctx.textAlign='center';
-    ctx.fillText('Tissue',s.x+w/2,160);
+    ctx.fillStyle=s.col+'22';ctx.fillRect(tx,ty,w,th);
+    ctx.strokeStyle=s.col;ctx.lineWidth=2;ctx.strokeRect(tx,ty,w,th);
+    // Drug fill in tissue
+    ctx.fillStyle=s.col+'77';
+    ctx.fillRect(tx+2,ty+th*(1-s.tissueFill),w-4,th*s.tissueFill);
+    ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';
+    ctx.fillText('Tissue',tx+w/2,ty+14);
+    // % label
+    ctx.fillStyle=s.col;ctx.font='bold 12px Arial';
+    ctx.fillText(Math.round(s.tissueFill*100)+'%',tx+w/2,ty+th/2+6);
+
     // Plasma compartment
-    ctx.fillStyle='rgba(52,152,219,0.3)';ctx.fillRect(s.x,300,w,ph);
-    ctx.strokeStyle='#3498DB';ctx.lineWidth=2;ctx.strokeRect(s.x,300,w,ph);
-    ctx.fillStyle='rgba(52,152,219,0.7)';ctx.fillRect(s.x+2,300+ph*(1-s.plasmaFill),w-4,ph*s.plasmaFill);
-    ctx.fillStyle='white';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText('Plasma',s.x+w/2,330);
-    // Label
-    const lines=s.label.split('
-');
-    ctx.fillStyle=s.col;ctx.font='bold 12px Arial';ctx.fillText(lines[0],s.x+w/2,108);
-    ctx.fillStyle='#ccc';ctx.font='10px Arial';ctx.fillText(lines[1],s.x+w/2,120);
-    ctx.fillStyle='#AED6F1';ctx.fillText(s.drug,s.x+w/2,396);
-    // Cp annotation
-    const cp=Math.round(s.plasmaFill*100*0.1);
-    ctx.fillStyle='white';ctx.font='9px Arial';ctx.fillText('Cp='+cp+' mg/L',s.x+w/2,375);
+    ctx.fillStyle='rgba(52,152,219,0.2)';ctx.fillRect(tx,ty+th+8,w,ph);
+    ctx.strokeStyle='#3498DB';ctx.lineWidth=2;ctx.strokeRect(tx,ty+th+8,w,ph);
+    ctx.fillStyle='rgba(52,152,219,0.65)';
+    ctx.fillRect(tx+2,ty+th+8+ph*(1-s.plasmaFill),w-4,ph*s.plasmaFill);
+    ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';
+    ctx.fillText('Plasma',tx+w/2,ty+th+22);
+    ctx.fillStyle='#3498DB';ctx.font='bold 12px Arial';
+    ctx.fillText(Math.round(s.plasmaFill*100)+'%',tx+w/2,ty+th+8+ph/2+6);
+
+    // Title above
+    ctx.fillStyle=s.col;ctx.font='bold 13px Arial';ctx.textAlign='center';
+    ctx.fillText(s.title,tx+w/2,ty-32);
+    ctx.fillStyle='white';ctx.font='11px Arial';
+    ctx.fillText(s.vd,tx+w/2,ty-18);
+    ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+    ctx.fillText(s.sub,tx+w/2,ty-6);
+
+    // Drug name and Cp below
+    ctx.fillStyle=s.col;ctx.font='bold 11px Arial';
+    ctx.fillText(s.drug,tx+w/2,ty+th+ph+22);
+    ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+    ctx.fillText('Cp = '+Math.round(s.plasmaFill*100*0.1)+' mg/L',tx+w/2,ty+th+ph+36);
+
+    // Animated drug dot moving between compartments
+    var bounce=Math.sin(t*0.04+s.x*0.01);
+    var dotY=ty+th/2+bounce*40;
+    ctx.beginPath();ctx.arc(tx+w/2,dotY,6,0,Math.PI*2);
+    ctx.fillStyle=s.col;ctx.globalAlpha=0.85;ctx.fill();ctx.globalAlpha=1;
   });
 
-  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,240,42);
+  // Info box
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(10,10,300,42);
   ctx.fillStyle='white';ctx.font='bold 12px Arial';ctx.textAlign='left';
-  ctx.fillText('Volume of Distribution',18,28);
-  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';ctx.fillText('Vd = Dose ÷ Cp(0)',18,44);
+  ctx.fillText('Volume of Distribution (Vd)',18,28);
+  ctx.fillStyle='#AED6F1';ctx.font='10px Arial';
+  ctx.fillText('Vd = Dose / Cp(0)   Apparent, not real volume',18,44);
+
+  // Equation bar bottom
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(10,350,700,26);
+  ctx.fillStyle='#F1C40F';ctx.font='bold 10px Arial';ctx.textAlign='center';
+  ctx.fillText('Small Vd: drug stays in blood   |   Large Vd: drug hides in tissues   |   t½ = 0.693 x Vd / CL',360,366);
 }
 function step(){t++;}
 function loop(){if(running)step();draw();requestAnimationFrame(loop);}
 loop();
-function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(tb=>tb.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
-function cho(el,ok){const opts=el.parentElement.querySelectorAll('label');opts.forEach(o=>o.classList.remove('correct','wrong'));el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
+function showTab(id){document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.tab').forEach(function(tb){tb.classList.remove('active')});document.getElementById(id).classList.add('active');document.querySelectorAll('.tab')[['anim','theory','mcq'].indexOf(id)].classList.add('active');}
+function cho(el,ok){var opts=el.parentElement.querySelectorAll('label');opts.forEach(function(o){o.classList.remove('correct','wrong')});el.classList.add(ok?'correct':'wrong');if(!ok)el.parentElement.querySelector('[data-c]').classList.add('correct');}
 </script></body></html>
